@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name" translatable="false">CalcuLegor</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="nav_header_title" translatable="false">Android Studio</string>
+    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
+    <string name="nav_header_desc" translatable="false">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="calcolatrice">Calculator</string>
+    <string name="condividi">Share</string>
+    <string name="invia">Send</string>
+</resources>

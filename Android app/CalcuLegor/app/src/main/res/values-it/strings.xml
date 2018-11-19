@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Italiano</string>
+    <string name="calcolatrice">Calcolatrice</string>
+    <string name="condividi">Condividi</string>
+    <string name="invia">Invia</string>
+</resources>
