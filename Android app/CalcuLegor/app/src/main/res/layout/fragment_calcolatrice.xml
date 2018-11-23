@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_margin="10dp">
 
-        <EditText
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_password"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_weight="10"
-            android:id="@+id/espressione" />
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/espressione"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/write_expression"/>
+
+        </android.support.design.widget.TextInputLayout>
 
         <ImageButton
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="40"
-            android:src="@drawable/mic"
-            android:id="@+id/mic"/>
+            android:layout_height="30dp"
+            android:layout_weight="45"
+            android:id="@+id/mic"
+            android:background="@drawable/ic_mic"/>
 
         <ImageButton
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="40"
-            android:src="@drawable/ic_menu_camera"
+            android:layout_height="35dp"
+            android:layout_weight="45"
+            android:background="@drawable/ic_menu_camera"
             android:id="@+id/camera"/>
 
     </LinearLayout>
@@ -34,7 +45,11 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:id="@+id/invia"
-        android:text="@string/invia"/>
+        android:text="@string/invia"
+        android:background="@drawable/background_buttons"/>
 
 </LinearLayout>

@@ -58,6 +58,8 @@ public class FragmentCalcolatrice extends Fragment {
                 riconosciFoto();
             }
         });
+
+
     }
 
     private void riconosciVoce(){
