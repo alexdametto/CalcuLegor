@@ -9,4 +9,5 @@
     <string name="calcolatrice">Calculator</string>
     <string name="condividi">Share</string>
     <string name="invia">Send</string>
+    <string name="write_expression">Write the expression</string>
 </resources>
