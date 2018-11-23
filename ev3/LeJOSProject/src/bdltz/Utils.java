@@ -9,15 +9,20 @@ import java.awt.geom.GeneralPath;
 
 
 public class Utils {
-	public static Shape getShape(String text, Font font, Point from) {
+	private static Shape getShape(String text, Font font, Point from) {
 	    FontRenderContext context = new FontRenderContext(null, false, false);
 
 	    GeneralPath shape = new GeneralPath();
 	    TextLayout layout = new TextLayout(text, font, context);
-
+	    
 	    Shape outline = layout.getOutline(null);
 	    shape.append(outline, true);
 
 	    return shape;
 	}
+	
+	public static Shape getShape(String text, Font font, int x, int y) {
+		return Utils.getShape(text, font, new Point(x, y));
+	}
+	
 }
