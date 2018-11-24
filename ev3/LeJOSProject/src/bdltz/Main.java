@@ -17,9 +17,12 @@ public class Main {
 	    
 	    Motor.C.rotate(-400);*/
 	    
-	    Printer printer = new Printer("a");
+	    
+	    SimplePrinter printer = new SimplePrinter("a");
 	    
 	    printer.startPrinting();
+	    
+	    //Motor.A.rotate(500)
 	    
 	    System.out.println("Finished.");
 	    
