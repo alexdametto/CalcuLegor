@@ -24,19 +24,21 @@ public class SimplePrinter {
 	private static final double DELAY_Y = 0.5;
 		
 	// inside the letter....
-	private double currentX = 0 / 2;
+	private double currentX = 0;
 	private double currentY = 0;
+	
 	private double currentZ = 0; // da cambiare con il grado
 
 	private int charForRow = (int) Math.floor(( PAPER_MAX_X - 2 * DELAY_X ) / (LETTER_MAX_X + DELAY_X));
+	//private int indexInRow = charForRow/2;
 	private int indexInRow = 0;
 	
 	private int numberRow = (int) Math.floor(( PAPER_MAX_Y - 2 * DELAY_Y ) / (LETTER_MAX_Y + DELAY_Y)) ;
 	private int indexRow = 0;
 	
-	// le velocitÃ  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
-	private double degreePerX = 111.1111;
-	private double degreePerY = 111.1111;
+	// le velocita  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
+	private double degreePerX = 111.111111;
+	private double degreePerY = 90.909090;
 	
 	private int defaultSpeed = 720; // 720 degress per seconds
 	
@@ -64,17 +66,23 @@ public class SimplePrinter {
 				// change to next with checkes...
 				if(indexInRow > charForRow) {
 					// finita la riga
-					
 					// andare a capo
+					
 					indexRow++;
+					indexInRow = 0;
 				}
 				if(indexRow > numberRow) {
+					
+					indexRow = 0;
+					indexInRow = 0;					
 					// finito il foglio
-					
 					// mando fuori questo foglio
-					
 					// aspetto il prossimo foglio
+					
+					// ASPETTO!!!!!!!!!!!!
 				}
+				
+				simpleMove(0, 0);
 			}
 		}
 	}
@@ -90,9 +98,18 @@ public class SimplePrinter {
 		}
 	}
 	
-	private void simpleMove(final double destX, final double destY) {
-		final double dx = Math.abs(currentX - destX);
-		final double dy = Math.abs(currentY - destY);
+	private double getGlobalX(double x) {
+		return x + indexInRow * (LETTER_MAX_X + DELAY_X);
+	}
+	
+	private double getGlobalY(double y) {
+		return y + indexRow * (LETTER_MAX_Y + DELAY_Y);
+	}
+
+	
+	private void simpleMove(final double destX, final double destY) {		
+		final double dx = Math.abs(getGlobalX(currentX) - getGlobalX(destX));
+		final double dy = Math.abs(getGlobalY(currentY) - getGlobalY(destY));
 		
 		// We don't need a movement.
 		if(dx == 0 && dy == 0)
@@ -125,7 +142,7 @@ public class SimplePrinter {
 		     @Override
 		     public void run() {
 		    	 if(dx != 0)
-		    		 Motor.A.rotate((int)Math.round(degreePerX * (destX - currentX))); // il contrario forse?
+		    		 Motor.A.rotate((int)Math.round(degreePerX * (getGlobalX(destX) - getGlobalX(currentX)))); // il contrario forse?
 		     }
 		});
 		
@@ -133,7 +150,7 @@ public class SimplePrinter {
 		     @Override
 		     public void run() {  
 		    	 if(dy != 0)
-		    		 Motor.B.rotate((int)Math.round(degreePerY * (destY - currentY))); // il contrario forse?
+		    		 Motor.B.rotate((int)Math.round(degreePerY * (getGlobalY(destY) - getGlobalY(currentY)))); // il contrario forse?
 		     }
 		});
 		
