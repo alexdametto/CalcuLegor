@@ -34,6 +34,7 @@ public class SimplePrinter {
 	private int numberRow = (int) Math.floor(( PAPER_MAX_Y - 2 * DELAY_Y ) / (LETTER_MAX_Y + DELAY_Y)) ;
 	private int indexRow = 0;
 	
+	// le velocitÃ  son diverse, controllare con test
 	private double degreePerX = 111.1111;
 	private double degreePerY = 111.1111;
 	
@@ -101,14 +102,14 @@ public class SimplePrinter {
 		int speedDy = defaultSpeed;
 		
 		if(dx > dy && dy != 0) {			
-			// dy ha meno spazio da fare, dx deve velocizzarsi per fare più spazio in meno tempo.
+			// dy ha meno spazio da fare, dx deve velocizzarsi per fare piÃ¹ spazio in meno tempo.
 			// vel = spazio / tempo 	=> tempo = spazio / vel
 			
 			// tempoDx = tempoDy 		=> spazioDx / velDx = spazioDy / velDy
 			speedDx = (int) Math.round(speedDy / dy * dx);
 		}
 		else if(dx < dy && dx != 0) {
-			// dx ha meno spazio da fare, dy deve velocizzarsi per fare più spazio in meno tempo.
+			// dx ha meno spazio da fare, dy deve velocizzarsi per fare piÃ¹ spazio in meno tempo.
 			// vel = spazio / tempo 	=> tempo = spazio / vel
 			
 			// tempoDx = tempoDy 		=> spazioDx / velDx = spazioDy / velDy
