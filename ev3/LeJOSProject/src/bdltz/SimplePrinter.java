@@ -34,7 +34,7 @@ public class SimplePrinter {
 	private int numberRow = (int) Math.floor(( PAPER_MAX_Y - 2 * DELAY_Y ) / (LETTER_MAX_Y + DELAY_Y)) ;
 	private int indexRow = 0;
 	
-	// le velocità son diverse, controllare con test
+	// le velocità son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
 	private double degreePerX = 111.1111;
 	private double degreePerY = 111.1111;
 	
