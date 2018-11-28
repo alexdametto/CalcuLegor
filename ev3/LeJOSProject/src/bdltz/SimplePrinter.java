@@ -357,32 +357,56 @@ public class SimplePrinter {
 	}
 	
 	private void printB() {
-		
-		
+		lineInsideLetter(0,LETTER_MAX_Y);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.25);
+		lineInsideLetter(0,LETTER_MAX_Y * 0.5);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.75);
+		lineInsideLetter(0,0);
 	}
 	
 	private void printC() {
-		
+		lineInsideLetter(0, LETTER_MAX_Y);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y);
+		moveInsideLetter(0, 0);
+		lineInsideLetter(LETTER_MAX_X, 0);
 	}
 	
 	private void printD() {
-		
+		lineInsideLetter(0, LETTER_MAX_Y);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.5);
+		lineInsideLetter(0, 0);
 	}
 	
 	private void printE() {
-		
+		lineInsideLetter(0, LETTER_MAX_Y);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y);
+		moveInsideLetter(0, LETTER_MAX_Y * 0.5)
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.5);
+		moveInsideLetter(0, 0);
+		lineInsideLetter(LETTER_MAX_X, 0);
 	}
 	
 	private void printF() {
-		
+		lineInsideLetter(0, LETTER_MAX_Y);
+		moveInsideLetter(0, LETTER_MAX_Y * 0.5);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.5);
+		moveInsideLetter(0, 0);
+		lineInsideLetter(LETTER_MAX_X, 0);
 	}
 	
 	private void printG() {
-		
+		moveInsideLetter(LETTER_MAX_X, 0);
+		lineInsideLetter(0, 0);
+		lineInsideLetter(0, LETTER_MAX_Y);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.5);
+		lineInsideLetter(LETTER_MAX_X * 0.5, LETTER_MAX_Y * 0.5);
 	}
 	
 	private void printH() {
-		
+		lineInsideLetter(0, LETTER_MAX_Y);
+		moveInsideLetter(LETTER_MAX_X, 0);
+		lineInsideLetter();
 	}
 	
 	private void printI() {
