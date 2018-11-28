@@ -95,6 +95,151 @@ public class SimplePrinter {
 			case 'b' :
 				printB();
 				break;
+			case 'c' :
+				printC();
+				break;
+			case 'd' :
+				printD();
+				break;
+			case 'e' :
+				printE();
+				break;
+			case 'f' :
+				printF();
+				break;
+			case 'g' :
+				printG();
+				break;
+			case 'h' :
+				printH();
+				break;
+			case 'i' :
+				printI();
+				break;
+			case 'j' :
+				printJ();
+				break;
+			case 'k' :
+				printK();
+				break;
+			case 'l' :
+				printL();
+				break;
+			case 'm' :
+				printM();
+				break;
+			case 'n' :
+				printN();
+				break;
+			case 'o' :
+				printO();
+				break;
+			case 'p' :
+				printP();
+				break;
+			case 'q' :
+				printQ();
+				break;
+			case 'r' :
+				printR();
+				break;
+			case 's' :
+				printS();
+				break;
+			case 't' :
+				printT();
+				break;
+			case 'u' :
+				printU();
+				break;
+			case 'v' :
+				printV();
+				break;
+			case 'x' :
+				printX();
+				break;
+			case 'y' :
+				printY();
+				break;
+			case 'w' :
+				printW();
+				break;
+			case 'z' :
+				printZ();
+				break;
+				
+			case '0' :
+				print0();
+				break;
+			case '1' :
+				print1();
+				break;
+			case '2' :
+				print2();
+				break;
+			case '3' :
+				print3();
+				break;
+			case '4' :
+				print4();
+				break;
+			case '5' :
+				print5();
+				break;
+			case '6' :
+				print6();
+				break;
+			case '7' :
+				print7();
+				break;
+			case '8' :
+				print8();
+				break;
+			case '9' :
+				print9();
+			break;
+			
+			case '+' :
+				printSomma();
+				break;
+			case '-' :
+				printSottrazione();
+				break;
+			case '*' :
+				printMoltiplicazione();
+				break;
+			case '/' :
+				printDivisione();
+				break;
+			case '^' :
+				printPotenza();
+				break;
+			case '.' :
+				printRadice();
+				break;
+			case '=' :
+				printUguale();
+				break;
+			
+			case '(' :
+				printATonda();
+				break;
+			case ')' :
+				printCTonda();
+				break;
+			case '[' :
+				printAQuadra();
+				break;
+			case ']' :
+				printCQuadra();
+				break;
+			case '{' :
+				printAGraffa();
+				break;
+			case '}' :
+				printCGraffa();
+				break;	
+				
 		}
 	}
 	
@@ -213,5 +358,195 @@ public class SimplePrinter {
 	
 	private void printB() {
 		
+		
 	}
+	
+	private void printC() {
+		
+	}
+	
+	private void printD() {
+		
+	}
+	
+	private void printE() {
+		
+	}
+	
+	private void printF() {
+		
+	}
+	
+	private void printG() {
+		
+	}
+	
+	private void printH() {
+		
+	}
+	
+	private void printI() {
+		
+	}
+	
+	private void printJ() {
+		
+	}
+	
+	private void printK() {
+		
+	}
+	
+	private void printL() {
+		
+	}
+	
+	private void printM() {
+		
+	}
+	
+	private void printN() {
+		
+	}
+	
+	private void printO() {
+		
+	}
+	
+	private void printP() {
+		
+	}
+	
+	private void printQ() {
+		
+	}
+	
+	private void printR() {
+		
+	}
+	
+	private void printS() {
+		
+	}
+	
+	private void printT() {
+		
+	}
+	
+	private void printU() {
+		
+	}
+	
+	private void printV() {
+		
+	}
+	
+	private void printX() {
+		
+	}
+	
+	private void printW() {
+		
+	}
+	
+	private void printY() {
+		
+	}
+	
+	private void printZ() {
+		
+	}
+	
+	private void print0() {
+		
+	}
+	
+	private void print1() {
+		
+	}
+	
+	private void print2() {
+		
+	}
+	
+	private void print3() {
+		
+	}
+	
+	private void print4() {
+		
+	}
+	
+	private void print5() {
+		
+	}
+	
+	private void print6() {
+		
+	}
+	
+	private void print7() {
+		
+	}
+	
+	private void print8() {
+		
+	}
+	
+	private void print9() {
+		
+	}
+	
+	private void printSomma() {
+		
+	}
+	
+	private void printSottrazione() {
+		
+	}
+	
+	private void printMoltiplicazione() {
+		
+	}
+	
+	private void printDivisione() {
+		
+	}
+	
+	private void printPotenza() {
+		
+	}
+	
+	private void printUguale() {
+		
+	}
+	
+	private void printRadice() {
+		
+	}
+	
+	private void printATonda() {
+		
+	}
+	
+	private void printCTonda() {
+		
+	}
+	
+	private void printAQuadra() {
+		
+	}
+	
+	private void printCQuadra() {
+		
+	}
+	
+	private void printAGraffa() {
+		
+	}
+	
+	private void printCGraffa() {
+		
+	}
+	
 }
