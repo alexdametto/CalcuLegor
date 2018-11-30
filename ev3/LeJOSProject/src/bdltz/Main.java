@@ -20,6 +20,8 @@ public class Main {
 	    
 	    SimplePrinter printer = new SimplePrinter("a");
 	    
+	    //Motor.C.rotate(-1000);
+	    
 	    //Motor.B.rotate(500);
 	    
 	    printer.startPrinting();

@@ -2,19 +2,17 @@ package bdltz;
 
 import java.util.ArrayList;
 
-import bdltz.Printer.Point;
 import lejos.hardware.motor.Motor;
 
 public class SimplePrinter {
 	private ArrayList<String> container;
 	
 	// FOGLI DA 14 cm di larghezza, lunghi come un A4 (quindi 14 cm x 29.7 cm)
-
-	private static final double PAPER_CM_X = 14;
+	private static final double PAPER_CM_X = 14; // da rivedere, probabilmente 15 cm
 	private static final double PAPER_CM_Y = 29.7;
 	
 	// da rivedere
-	private static final double PAPER_MAX_X = 1 * PAPER_CM_X;
+	private static final double PAPER_MAX_X = 0.45 * PAPER_CM_X; // sono circa 7 cm...
 	private static final double PAPER_MAX_Y = 1 * PAPER_CM_Y; 
 	
 	// a letter is LETTER_MAX_X * LETTER_MAX_Y rectangle.
@@ -287,7 +285,7 @@ public class SimplePrinter {
 		     @Override
 		     public void run() {
 		    	 if(dx != 0)
-		    		 Motor.A.rotate((int)Math.round(degreePerX * (getGlobalX(destX) - getGlobalX(currentX)))); // il contrario forse?
+		    		 Motor.A.rotate((int)Math.round(degreePerX * (getGlobalX(currentX) - getGlobalX(destX)))); // il contrario forse?
 		     }
 		});
 		
@@ -295,7 +293,7 @@ public class SimplePrinter {
 		     @Override
 		     public void run() {  
 		    	 if(dy != 0)
-		    		 Motor.B.rotate((int)Math.round(degreePerY * (getGlobalY(destY) - getGlobalY(currentY)))); // il contrario forse?
+		    		 Motor.B.rotate((int)Math.round(degreePerY * (getGlobalY(currentY) - getGlobalY(destY)))); // il contrario forse?
 		     }
 		});
 		
@@ -311,7 +309,7 @@ public class SimplePrinter {
 			
 			// wait both thread before going out.
 		}catch(Exception e) {
-			System.out.println("Error executing parallel motors move.");
+			System.out.println("Error executing parallel motors move. Contact the productor.");
 		}
 	}
 	
@@ -380,7 +378,7 @@ public class SimplePrinter {
 	private void printE() {
 		lineInsideLetter(0, LETTER_MAX_Y);
 		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y);
-		moveInsideLetter(0, LETTER_MAX_Y * 0.5)
+		moveInsideLetter(0, LETTER_MAX_Y * 0.5);
 		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.5);
 		moveInsideLetter(0, 0);
 		lineInsideLetter(LETTER_MAX_X, 0);
@@ -406,7 +404,7 @@ public class SimplePrinter {
 	private void printH() {
 		lineInsideLetter(0, LETTER_MAX_Y);
 		moveInsideLetter(LETTER_MAX_X, 0);
-		lineInsideLetter();
+		//lineInsideLetter();
 	}
 	
 	private void printI() {
