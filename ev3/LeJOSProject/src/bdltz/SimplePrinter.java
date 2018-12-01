@@ -8,12 +8,12 @@ public class SimplePrinter {
 	private ArrayList<String> container;
 	
 	// FOGLI DA 14 cm di larghezza, lunghi come un A4 (quindi 14 cm x 29.7 cm)
-	private static final double PAPER_CM_X = 14; // da rivedere, probabilmente 15 cm
-	private static final double PAPER_CM_Y = 29.7;
+	//private static final double PAPER_CM_X = 14; // da rivedere, probabilmente 15 cm
+	//private static final double PAPER_CM_Y = 29.7;
 	
 	// da rivedere
-	private static final double PAPER_MAX_X = 0.45 * PAPER_CM_X; // sono circa 7 cm...
-	private static final double PAPER_MAX_Y = 1 * PAPER_CM_Y; 
+	private static final double PAPER_MAX_X = 6.5; // sono circa 6.5 cm...
+	private static final double PAPER_MAX_Y = 20; 
 	
 	// a letter is LETTER_MAX_X * LETTER_MAX_Y rectangle.
 	private static final double LETTER_MAX_X = 1; 
@@ -60,6 +60,8 @@ public class SimplePrinter {
 				
 				printChar(c);
 				
+				System.out.println(indexRow + " , " + indexInRow);
+				
 				indexInRow++;
 				// change to next with checkes...
 				if(indexInRow > charForRow) {
@@ -80,7 +82,7 @@ public class SimplePrinter {
 					// ASPETTO!!!!!!!!!!!!
 				}
 				
-				simpleMove(0, 0);
+				moveInsideLetter(0, 0);
 			}
 		}
 	}
@@ -241,19 +243,19 @@ public class SimplePrinter {
 		}
 	}
 	
-	private double getGlobalX(double x) {
-		return x + indexInRow * (LETTER_MAX_X + DELAY_X);
+	private double getGlobalX(double x) {		
+		return x + (double)(indexInRow) * (LETTER_MAX_X + DELAY_X);
 	}
 	
 	private double getGlobalY(double y) {
-		return y + indexRow * (LETTER_MAX_Y + DELAY_Y);
+		return y + (double)(indexRow) * (LETTER_MAX_Y + DELAY_Y);
 	}
 
 	
 	private void simpleMove(final double destX, final double destY) {		
-		final double dx = Math.abs(getGlobalX(currentX) - getGlobalX(destX));
-		final double dy = Math.abs(getGlobalY(currentY) - getGlobalY(destY));
-		
+		final double dx = Math.abs(currentX - getGlobalX(destX));
+		final double dy = Math.abs(currentY - getGlobalY(destY));
+				
 		// We don't need a movement.
 		if(dx == 0 && dy == 0)
 			return;
@@ -285,7 +287,7 @@ public class SimplePrinter {
 		     @Override
 		     public void run() {
 		    	 if(dx != 0)
-		    		 Motor.A.rotate((int)Math.round(degreePerX * (getGlobalX(currentX) - getGlobalX(destX)))); // il contrario forse?
+		    		 Motor.A.rotate(-(int)Math.round(degreePerX * (getGlobalX(destX) - currentX))); // il contrario forse?
 		     }
 		});
 		
@@ -293,7 +295,7 @@ public class SimplePrinter {
 		     @Override
 		     public void run() {  
 		    	 if(dy != 0)
-		    		 Motor.B.rotate((int)Math.round(degreePerY * (getGlobalY(currentY) - getGlobalY(destY)))); // il contrario forse?
+		    		 Motor.B.rotate(-(int)Math.round(degreePerY * (getGlobalY(destY) - currentY))); // il contrario forse?
 		     }
 		});
 		
@@ -304,8 +306,8 @@ public class SimplePrinter {
 			t1.join();
 			t2.join();	
 			
-			currentX = destX;
-			currentY = destY;
+			currentX = getGlobalX(destX);
+			currentY = getGlobalY(destY);
 			
 			// wait both thread before going out.
 		}catch(Exception e) {
@@ -319,11 +321,11 @@ public class SimplePrinter {
 	private void moveInsideLetter(double destX, double destY) {
 		// alza il motore se serve
 		
-		Motor.C.rotate(800);
+		Motor.C.rotate(200);
 				
 		simpleMove(destX, destY);
 		
-		Motor.C.rotate(-800);
+		Motor.C.rotate(-200);
 		// abbassa il motore
 	}
 	
@@ -332,9 +334,7 @@ public class SimplePrinter {
 	
 	private void lineInsideLetter(double destX, double destY) {
 		// same as above without taking up the pen 
-		
 		simpleMove(destX, destY);
-		
 	}
 	
 	

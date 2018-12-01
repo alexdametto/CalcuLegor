@@ -6,8 +6,14 @@ import lejos.hardware.port.MotorPort;
 
 public class Main {
 	public static void main(String[] args) {
-	    System.out.println("Not implemented yes. Just created for the first commit.");		
+		
+		Motor.C.rotate(800);
+		
+	    System.out.println("Insert the pen.");		
 	    
+	    Button.waitForAnyPress();
+	    
+	    Motor.C.rotate(-800);
 	   
 	    /*Motor.C.rotate(400);
 	    
