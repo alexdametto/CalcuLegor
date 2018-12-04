@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -59,7 +60,12 @@ public class FragmentCalcolatrice extends Fragment {
             }
         });
 
-
+        invia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickPulsante();
+            }
+        });
     }
 
     private void riconosciVoce(){
@@ -109,5 +115,10 @@ public class FragmentCalcolatrice extends Fragment {
         dettato = dettato.replace("fratto", "/");
 
         return dettato;
+    }
+
+    public void clickPulsante() {
+        ProgressBar progressBar = rootview.findViewById(R.id.progressBar);
+        progressBar.setProgress(7);
     }
 }
