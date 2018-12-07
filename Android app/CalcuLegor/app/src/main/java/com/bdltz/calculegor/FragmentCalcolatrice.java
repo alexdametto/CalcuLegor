@@ -118,7 +118,7 @@ public class FragmentCalcolatrice extends Fragment {
     }
 
     public void clickPulsante() {
-        ProgressBar progressBar = rootview.findViewById(R.id.progressBar);
-        progressBar.setProgress(7);
+        //ProgressBar progressBar = rootview.findViewById(R.id.progressBar);
+        //progressBar.setProgress(7);
     }
 }

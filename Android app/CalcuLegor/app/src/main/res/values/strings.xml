@@ -10,4 +10,7 @@
     <string name="condividi">Share</string>
     <string name="invia">Send</string>
     <string name="write_expression">Write the expression</string>
+    <string name="key_audio_robot">Enable/disable printer audio</string>
+    <string name="key_vibrazione">Enable/disable phone vibration</string>
+    <string name="key_permessi">Enable system permission</string>
 </resources>
