@@ -22,7 +22,7 @@ public class SimplePrinter {
 	private static final double DELAY_Y = 0.5;
 		
 	// inside the letter....
-	private double currentX = 0;
+	private double currentX = PAPER_MAX_X / 2;
 	private double currentY = 0;
 	
 	private double currentZ = 0; // da cambiare con il grado
@@ -34,11 +34,11 @@ public class SimplePrinter {
 	private int numberRow = (int) Math.floor(( PAPER_MAX_Y - 2 * DELAY_Y ) / (LETTER_MAX_Y + DELAY_Y)) ;
 	private int indexRow = 0;
 	
-	// le velocita  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
+	// le velocitaÂ  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
 	private double degreePerX = 111.111111;
 	private double degreePerY = 90.909090;
 	
-	private int defaultSpeed = 720; // 720 degress per seconds
+	private int defaultSpeed = 360; // 720 degress per seconds
 	
 	SimplePrinter(ArrayList<String> toPrint) {
 		this.container = toPrint;
@@ -51,11 +51,12 @@ public class SimplePrinter {
 		System.out.println(charForRow + ", " + numberRow);
 	}
 	
-	public void startPrinting() {
+	public void startPrinting() {	
 		for(String passo : container) {
 			passo = passo.toLowerCase();
 			
 			for(int i = 0; i < passo.length(); ++i) {
+				moveInsideLetter(0, 0);
 				char c = passo.charAt(i);
 				
 				printChar(c);
@@ -81,8 +82,6 @@ public class SimplePrinter {
 					
 					// ASPETTO!!!!!!!!!!!!
 				}
-				
-				moveInsideLetter(0, 0);
 			}
 		}
 	}
@@ -214,7 +213,7 @@ public class SimplePrinter {
 			case '^' :
 				printPotenza();
 				break;
-			case '.' :
+			case '√' :
 				printRadice();
 				break;
 			case '=' :
@@ -267,14 +266,14 @@ public class SimplePrinter {
 		int speedDy = defaultSpeed;
 		
 		if(dx > dy && dy != 0) {			
-			// dy ha meno spazio da fare, dx deve velocizzarsi per fare piÃ¹ spazio in meno tempo.
+			// dy ha meno spazio da fare, dx deve velocizzarsi per fare piÃƒÂ¹ spazio in meno tempo.
 			// vel = spazio / tempo 	=> tempo = spazio / vel
 			
 			// tempoDx = tempoDy 		=> spazioDx / velDx = spazioDy / velDy
 			speedDx = (int) Math.round(speedDy / dy * dx);
 		}
 		else if(dx < dy && dx != 0) {
-			// dx ha meno spazio da fare, dy deve velocizzarsi per fare piÃ¹ spazio in meno tempo.
+			// dx ha meno spazio da fare, dy deve velocizzarsi per fare piÃƒÂ¹ spazio in meno tempo.
 			// vel = spazio / tempo 	=> tempo = spazio / vel
 			
 			// tempoDx = tempoDy 		=> spazioDx / velDx = spazioDy / velDy
@@ -290,7 +289,7 @@ public class SimplePrinter {
 		     @Override
 		     public void run() {
 		    	 if(dx != 0)
-		    		 Motor.A.rotate(-(int)Math.round(degreePerX * (getGlobalX(destX) - currentX))); // il contrario forse?
+		    		 Motor.A.rotate((int)Math.round(degreePerX * (getGlobalX(destX) - currentX))); // il contrario forse?
 		     }
 		});
 		
@@ -359,9 +358,9 @@ public class SimplePrinter {
 	
 	private void printB() {
 		lineInsideLetter(0,LETTER_MAX_Y);
-		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.25);
-		lineInsideLetter(0,LETTER_MAX_Y * 0.5);
 		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.75);
+		lineInsideLetter(0,LETTER_MAX_Y * 0.5);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.25);
 		lineInsideLetter(0,0);
 	}
 	

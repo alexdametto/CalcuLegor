@@ -24,7 +24,7 @@ public class Main {
 	    Motor.C.rotate(-400);*/
 	    
 	    
-	    SimplePrinter printer = new SimplePrinter("a");
+	    SimplePrinter printer = new SimplePrinter("BDLTZ");
 	    
 	    //Motor.C.rotate(-1000);
 	    
