@@ -38,6 +38,7 @@ public class SimplePrinter {
 	private double degreePerX = 111.111111;
 	private double degreePerY = 90.909090;
 	
+	
 	private int defaultSpeed = 360; // 720 degress per seconds
 	
 	SimplePrinter(ArrayList<String> toPrint) {
