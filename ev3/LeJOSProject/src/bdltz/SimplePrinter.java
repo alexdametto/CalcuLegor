@@ -16,16 +16,15 @@ public class SimplePrinter {
 	private static final double PAPER_MAX_Y = 20; 
 	
 	// a letter is LETTER_MAX_X * LETTER_MAX_Y rectangle.
-	private static final double LETTER_MAX_X = 1; 
-	private static final double LETTER_MAX_Y = 2;
-	private static final double DELAY_X = 0.5;
-	private static final double DELAY_Y = 0.5;
+	private static final double LETTER_MAX_X = 0.5; 
+	private static final double LETTER_MAX_Y = 1;
+	private static final double DELAY_X = 0.25;
+	private static final double DELAY_Y = 0.25;
 		
 	// inside the letter....
 	private double currentX = PAPER_MAX_X / 2;
 	private double currentY = 0;
-	
-	private double currentZ = 0; // da cambiare con il grado
+	private double currentZ = 800; // da cambiare con il grado
 
 	private int charForRow = (int) Math.floor(( PAPER_MAX_X - 2 * DELAY_X ) / (LETTER_MAX_X + DELAY_X));
 	//private int indexInRow = charForRow/2;
@@ -37,7 +36,8 @@ public class SimplePrinter {
 	// le velocitaÂ  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
 	private double degreePerX = 111.111111;
 	private double degreePerY = 90.909090;
-	
+	private int degreePerZ = 200;
+		
 	
 	private int defaultSpeed = 360; // 720 degress per seconds
 	
@@ -61,9 +61,7 @@ public class SimplePrinter {
 				char c = passo.charAt(i);
 				
 				printChar(c);
-				
-				System.out.println(indexRow + " , " + indexInRow);
-				
+								
 				indexInRow++;
 				// change to next with checkes...
 				if(indexInRow > charForRow) {
@@ -84,6 +82,13 @@ public class SimplePrinter {
 					// ASPETTO!!!!!!!!!!!!
 				}
 			}
+			
+			// vado a capo, nuovo passo.
+		}
+		
+		if(currentZ == 0) {
+			Motor.C.rotate(degreePerZ);
+			currentZ = degreePerZ;
 		}
 	}
 	
@@ -320,23 +325,26 @@ public class SimplePrinter {
 	
 	
 	// move from a point to a point at the same time and with the same duration
-	// DOESN'T WORK, SOMETHING WRONG WITH SIGNS!!!!!!!!!!!
 	private void moveInsideLetter(double destX, double destY) {
-		// alza il motore se serve
-		
-		Motor.C.rotate(200);
-				
+		// if the pen is down, take it up
+		if(currentZ == 0) {
+			Motor.C.rotate(degreePerZ);
+			currentZ = degreePerZ;
+		}
+					
 		simpleMove(destX, destY);
-		
-		Motor.C.rotate(-200);
-		// abbassa il motore
 	}
 	
 	
 	
 	
 	private void lineInsideLetter(double destX, double destY) {
-		// same as above without taking up the pen 
+		// if the pen is up, just take it down.
+		if(currentZ != 0) {
+			Motor.C.rotate((int)-currentZ);
+			currentZ = 0;
+		}
+				
 		simpleMove(destX, destY);
 	}
 	
