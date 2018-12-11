@@ -2,7 +2,11 @@ package bdltz;
 
 import java.util.ArrayList;
 
+import lejos.hardware.Button;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.robotics.SampleProvider;
 
 public class SimplePrinter {
 	private ArrayList<String> container;
@@ -16,29 +20,36 @@ public class SimplePrinter {
 	private static final double PAPER_MAX_Y = 20; 
 	
 	// a letter is LETTER_MAX_X * LETTER_MAX_Y rectangle.
-	private static final double LETTER_MAX_X = 1; 
-	private static final double LETTER_MAX_Y = 2;
-	private static final double DELAY_X = 0.5;
-	private static final double DELAY_Y = 0.5;
+	private static final double LETTER_MAX_X = 0.5; 
+	private static final double LETTER_MAX_Y = 1;
+	private static final double DELAY_X = 0.25;
+	private static final double DELAY_Y = 0.25;
+	
+	// remember to take it up.
+	final private int initialZ = 800;
 		
 	// inside the letter....
-	private double currentX = 0;
+	private double currentX = PAPER_MAX_X / 2;
 	private double currentY = 0;
-	
-	private double currentZ = 0; // da cambiare con il grado
+	private double currentZ = initialZ; // da cambiare con il grado
 
-	private int charForRow = (int) Math.floor(( PAPER_MAX_X - 2 * DELAY_X ) / (LETTER_MAX_X + DELAY_X));
+	final private int charForRow = (int) Math.floor(( PAPER_MAX_X - 2 * DELAY_X ) / (LETTER_MAX_X + DELAY_X));
 	//private int indexInRow = charForRow/2;
 	private int indexInRow = 0;
 	
-	private int numberRow = (int) Math.floor(( PAPER_MAX_Y - 2 * DELAY_Y ) / (LETTER_MAX_Y + DELAY_Y)) ;
+	final private int numberRow = (int) Math.floor(( PAPER_MAX_Y - 2 * DELAY_Y ) / (LETTER_MAX_Y + DELAY_Y)) ;
 	private int indexRow = 0;
 	
-	// le velocita  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
-	private double degreePerX = 111.111111;
-	private double degreePerY = 90.909090;
+	// le velocitaÂ  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
+	final private double degreePerX = 111.111111;
+	final private double degreePerY = 90.909090;
+	final private int degreePerZ = 200;
+		
+	private static final EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S1);
+	private final SampleProvider sp = us.getDistanceMode();
+		
 	
-	private int defaultSpeed = 720; // 720 degress per seconds
+	private int defaultSpeed = 360; // 720 degress per seconds
 	
 	SimplePrinter(ArrayList<String> toPrint) {
 		this.container = toPrint;
@@ -51,17 +62,18 @@ public class SimplePrinter {
 		System.out.println(charForRow + ", " + numberRow);
 	}
 	
-	public void startPrinting() {
-		for(String passo : container) {
+	public void startPrinting() {	
+		attendiFoglio();
+		
+		/*for(String passo : container) {
 			passo = passo.toLowerCase();
 			
 			for(int i = 0; i < passo.length(); ++i) {
+				moveInsideLetter(0, 0);
 				char c = passo.charAt(i);
 				
 				printChar(c);
-				
-				System.out.println(indexRow + " , " + indexInRow);
-				
+								
 				indexInRow++;
 				// change to next with checkes...
 				if(indexInRow > charForRow) {
@@ -72,19 +84,66 @@ public class SimplePrinter {
 					indexInRow = 0;
 				}
 				if(indexRow > numberRow) {
-					
 					indexRow = 0;
-					indexInRow = 0;					
-					// finito il foglio
-					// mando fuori questo foglio
-					// aspetto il prossimo foglio
-					
-					// ASPETTO!!!!!!!!!!!!
+					indexInRow = 0;
+					cambiaFoglio();
 				}
-				
-				moveInsideLetter(0, 0);
 			}
+			
+			indexInRow = 0;
+			indexRow++;
+			
+			if(indexRow > numberRow) {
+				indexRow = 0;
+				cambiaFoglio();
+			}
+		}*/
+		
+		
+		Motor.C.rotate((int)(initialZ-currentZ));
+		currentZ = initialZ;
+		
+		espelliFoglio();
+	}
+	
+	private void espelliFoglio() {
+		if(currentZ == 0) {
+			Motor.C.rotate(degreePerZ);
+			currentZ = degreePerZ;
 		}
+		
+		float distanceValue;
+		Motor.B.setSpeed(defaultSpeed);
+		Motor.B.forward();
+        do {
+    		float [] sample = new float[sp.sampleSize()];
+            sp.fetchSample(sample, 0);
+            distanceValue = sample[0];
+        } while(distanceValue < 0.02 || Float.isInfinite(distanceValue));
+        
+        Motor.B.stop();
+	}
+	
+	private void attendiFoglio() {
+		if(currentZ == 0) {
+			Motor.C.rotate(degreePerZ);
+			currentZ = degreePerZ;
+		}
+		
+		float distanceValue;
+		Motor.B.setSpeed(defaultSpeed);
+		Motor.B.backward();
+        do {
+    		float [] sample = new float[sp.sampleSize()];
+            sp.fetchSample(sample, 0);
+            distanceValue = sample[0];
+        } while(distanceValue > 0.02 && !Float.isInfinite(distanceValue));
+        Motor.B.stop();
+	}
+	
+	private void cambiaFoglio() {
+		espelliFoglio();
+		attendiFoglio();
 	}
 	
 	private void printChar(char c) {
@@ -214,7 +273,7 @@ public class SimplePrinter {
 			case '^' :
 				printPotenza();
 				break;
-			case '.' :
+			case '√' :
 				printRadice();
 				break;
 			case '=' :
@@ -267,14 +326,14 @@ public class SimplePrinter {
 		int speedDy = defaultSpeed;
 		
 		if(dx > dy && dy != 0) {			
-			// dy ha meno spazio da fare, dx deve velocizzarsi per fare piÃ¹ spazio in meno tempo.
+			// dy ha meno spazio da fare, dx deve velocizzarsi per fare piÃƒÂ¹ spazio in meno tempo.
 			// vel = spazio / tempo 	=> tempo = spazio / vel
 			
 			// tempoDx = tempoDy 		=> spazioDx / velDx = spazioDy / velDy
 			speedDx = (int) Math.round(speedDy / dy * dx);
 		}
 		else if(dx < dy && dx != 0) {
-			// dx ha meno spazio da fare, dy deve velocizzarsi per fare piÃ¹ spazio in meno tempo.
+			// dx ha meno spazio da fare, dy deve velocizzarsi per fare piÃƒÂ¹ spazio in meno tempo.
 			// vel = spazio / tempo 	=> tempo = spazio / vel
 			
 			// tempoDx = tempoDy 		=> spazioDx / velDx = spazioDy / velDy
@@ -290,7 +349,7 @@ public class SimplePrinter {
 		     @Override
 		     public void run() {
 		    	 if(dx != 0)
-		    		 Motor.A.rotate(-(int)Math.round(degreePerX * (getGlobalX(destX) - currentX))); // il contrario forse?
+		    		 Motor.A.rotate((int)Math.round(degreePerX * (getGlobalX(destX) - currentX))); // il contrario forse?
 		     }
 		});
 		
@@ -320,35 +379,30 @@ public class SimplePrinter {
 	
 	
 	// move from a point to a point at the same time and with the same duration
-	// DOESN'T WORK, SOMETHING WRONG WITH SIGNS!!!!!!!!!!!
 	private void moveInsideLetter(double destX, double destY) {
-		// alza il motore se serve
-		
-		Motor.C.rotate(200);
-				
+		// if the pen is down, take it up
+		if(currentZ == 0) {
+			Motor.C.rotate(degreePerZ);
+			currentZ = degreePerZ;
+		}
+					
 		simpleMove(destX, destY);
-		
-		Motor.C.rotate(-200);
-		// abbassa il motore
 	}
-	
-	
-	
 	
 	private void lineInsideLetter(double destX, double destY) {
-		// same as above without taking up the pen 
+		// if the pen is up, just take it down.
+		if(currentZ != 0) {
+			Motor.C.rotate((int)-currentZ);
+			currentZ = 0;
+		}
+				
 		simpleMove(destX, destY);
 	}
+	
+	
 	
 	
 	private void printA() {
-		/*	__
-		 * |__|
-		 * |  |
-		 * 
-		 */
-		
-		//moveInsideLetter(LETTER_MAX_X, 0);
 		moveInsideLetter(0, LETTER_MAX_Y);
 		lineInsideLetter(0, 0);
 		lineInsideLetter(LETTER_MAX_X, 0);
@@ -359,9 +413,9 @@ public class SimplePrinter {
 	
 	private void printB() {
 		lineInsideLetter(0,LETTER_MAX_Y);
-		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.25);
-		lineInsideLetter(0,LETTER_MAX_Y * 0.5);
 		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.75);
+		lineInsideLetter(0,LETTER_MAX_Y * 0.5);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.25);
 		lineInsideLetter(0,0);
 	}
 	
