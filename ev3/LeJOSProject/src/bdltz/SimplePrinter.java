@@ -16,7 +16,7 @@ public class SimplePrinter {
 	//private static final double PAPER_CM_Y = 29.7;
 	
 	// da rivedere
-	private static final double PAPER_MAX_X = 6.5; // sono circa 6.5 cm...
+	private static final double PAPER_MAX_X = 6.25; // sono circa 6.5 cm...
 	private static final double PAPER_MAX_Y = 20; 
 	
 	// a letter is LETTER_MAX_X * LETTER_MAX_Y rectangle.
@@ -24,6 +24,8 @@ public class SimplePrinter {
 	private static final double LETTER_MAX_Y = 1;
 	private static final double DELAY_X = 0.25;
 	private static final double DELAY_Y = 0.25;
+	
+	private static final double PAPER_SENS = 0.05; // should work
 	
 	// remember to take it up.
 	final private int initialZ = 800;
@@ -43,7 +45,7 @@ public class SimplePrinter {
 	// le velocitaÂ  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
 	final private double degreePerX = 111.111111;
 	final private double degreePerY = 90.909090;
-	final private int degreePerZ = 200;
+	final private int degreePerZ = 300;
 		
 	private static final EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S1);
 	private final SampleProvider sp = us.getDistanceMode();
@@ -65,7 +67,7 @@ public class SimplePrinter {
 	public void startPrinting() {	
 		attendiFoglio();
 		
-		/*for(String passo : container) {
+		for(String passo : container) {
 			passo = passo.toLowerCase();
 			
 			for(int i = 0; i < passo.length(); ++i) {
@@ -97,10 +99,10 @@ public class SimplePrinter {
 				indexRow = 0;
 				cambiaFoglio();
 			}
-		}*/
+		}
 		
 		
-		Motor.C.rotate((int)(initialZ-currentZ));
+		Motor.C.rotate((int)(initialZ-currentZ)); // prima bisogna spostare l'asse X
 		currentZ = initialZ;
 		
 		espelliFoglio();
@@ -119,7 +121,7 @@ public class SimplePrinter {
     		float [] sample = new float[sp.sampleSize()];
             sp.fetchSample(sample, 0);
             distanceValue = sample[0];
-        } while(distanceValue < 0.02 || Float.isInfinite(distanceValue));
+        } while(distanceValue < PAPER_SENS || Float.isInfinite(distanceValue));
         
         Motor.B.stop();
 	}
@@ -137,7 +139,7 @@ public class SimplePrinter {
     		float [] sample = new float[sp.sampleSize()];
             sp.fetchSample(sample, 0);
             distanceValue = sample[0];
-        } while(distanceValue > 0.02 && !Float.isInfinite(distanceValue));
+        } while(distanceValue > PAPER_SENS && !Float.isInfinite(distanceValue));
         Motor.B.stop();
 	}
 	

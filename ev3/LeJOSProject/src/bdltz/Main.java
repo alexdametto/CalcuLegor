@@ -13,10 +13,10 @@ import lejos.utility.Delay;
 public class Main {
 	public static void main(String[] args) {
 	    System.out.println("Insert the pen.");		
-	    
+	    	    
 	    Button.waitForAnyPress();
 	    
-	    SimplePrinter printer = new SimplePrinter("5+4");
+	    SimplePrinter printer = new SimplePrinter("ciaofioi");
 	    printer.startPrinting();
 	    
 	    System.out.println("Finished.");
