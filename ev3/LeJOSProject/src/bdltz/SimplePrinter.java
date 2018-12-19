@@ -9,6 +9,8 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 
 public class SimplePrinter {
+	// RIVEDERE TUTTE QUESTE VARIABILI!!!!!!!
+	
 	private ArrayList<String> container;
 	
 	// FOGLI DA 14 cm di larghezza, lunghi come un A4 (quindi 14 cm x 29.7 cm)
@@ -25,7 +27,7 @@ public class SimplePrinter {
 	private static final double DELAY_X = 0.25;
 	private static final double DELAY_Y = 0.25;
 	
-	private static final double PAPER_SENS = 0.05; // should work
+	private static final double PAPER_SENS = 0.05; 
 	
 	// remember to take it up.
 	final private int initialZ = 800;
