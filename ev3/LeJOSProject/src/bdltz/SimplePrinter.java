@@ -2,7 +2,6 @@ package bdltz;
 
 import java.util.ArrayList;
 
-import lejos.hardware.Button;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
@@ -35,7 +34,7 @@ public class SimplePrinter {
 	// inside the letter....
 	private double currentX = PAPER_MAX_X / 2;
 	private double currentY = 0;
-	private double currentZ = initialZ; // da cambiare con il grado
+	private int currentZ = initialZ; // da cambiare con il grado
 
 	final private int charForRow = (int) Math.floor(( PAPER_MAX_X - 2 * DELAY_X ) / (LETTER_MAX_X + DELAY_X));
 	//private int indexInRow = charForRow/2;
@@ -63,11 +62,14 @@ public class SimplePrinter {
 		this.container = new ArrayList<String>();
 		container.add(toPrint);
 		
-		System.out.println(charForRow + ", " + numberRow);
+		//System.out.println(charForRow + ", " + numberRow);
 	}
 	
 	public void startPrinting() {	
 		attendiFoglio();
+		
+		
+		
 		
 		for(String passo : container) {
 			passo = passo.toLowerCase();
@@ -143,6 +145,11 @@ public class SimplePrinter {
             distanceValue = sample[0];
         } while(distanceValue > PAPER_SENS && !Float.isInfinite(distanceValue));
         Motor.B.stop();
+        
+		if(currentZ != 0) {
+			Motor.C.rotate(-currentZ + degreePerZ);
+			currentZ = degreePerZ;
+		}
 	}
 	
 	private void cambiaFoglio() {

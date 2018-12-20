@@ -1,23 +1,24 @@
 package bdltz;
 
-import java.text.DecimalFormat;
-
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
-import lejos.hardware.motor.Motor;
-import lejos.hardware.port.MotorPort;
-import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.robotics.SampleProvider;
-import lejos.utility.Delay;
+import lejos.hardware.Power;
 
 public class Main {
 	public static void main(String[] args) {
-	    System.out.println("Insert the pen.");		
+	    System.out.println("Insert the pen.");	
+	    
+	    //Motor.C.rotate(800);
 	    	    
 	    Button.waitForAnyPress();
 	    
-	    SimplePrinter printer = new SimplePrinter("ciaofioi");
-	    printer.startPrinting();
+	    Power power = BrickFinder.getDefault().getPower();
+	    
+	    System.out.println(power.getVoltage());
+	    
+	    
+	    //SimplePrinter printer = new SimplePrinter(" ciao");
+	    //printer.startPrinting();
 	    
 	    System.out.println("Finished.");
 	    
