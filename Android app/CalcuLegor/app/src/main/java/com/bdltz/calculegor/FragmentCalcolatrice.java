@@ -1,7 +1,13 @@
 package com.bdltz.calculegor;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Camera;
 import android.os.Bundle;
@@ -10,13 +16,19 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
+import com.bdltz.calculegor.Adapters.DeviceListArrayAdapter;
+import com.bdltz.calculegor.Adapters.DialogListAdapter;
+
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -26,6 +38,10 @@ public class FragmentCalcolatrice extends Fragment {
     ImageButton voce, camera;
     EditText espressione;
     Button invia;
+
+    ArrayAdapter<BluetoothDevice> adapter;
+
+    BluetoothAdapter BTAdapter;
 
     private final static int REQ_CODE_SPEECH_INPUT = 1;
 
@@ -66,6 +82,10 @@ public class FragmentCalcolatrice extends Fragment {
                 clickPulsante();
             }
         });
+
+        ArrayList<BluetoothDevice> lista = new ArrayList<>();
+
+        adapter = new DeviceListArrayAdapter(getActivity(), lista);
     }
 
     private void riconosciVoce(){
@@ -118,7 +138,25 @@ public class FragmentCalcolatrice extends Fragment {
     }
 
     public void clickPulsante() {
-        //ProgressBar progressBar = rootview.findViewById(R.id.progressBar);
-        //progressBar.setProgress(7);
+        this.BTAdapter = BluetoothAdapter.getDefaultAdapter();
+        // Phone does not support Bluetooth so let the user know and exit.
+        if (BTAdapter == null) {
+            new AlertDialog.Builder(rootview.getContext())
+                    .setTitle("Not compatible")
+                    .setMessage("Your phone does not support Bluetooth")
+                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            System.exit(0);
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+        else {
+            // fare controllo se bluetooth è attivato
+
+            //DialogListAdapter cdd=new DialogListAdapter(getActivity(), adapter, BTAdapter);
+            //cdd.show();
+        }
     }
 }
