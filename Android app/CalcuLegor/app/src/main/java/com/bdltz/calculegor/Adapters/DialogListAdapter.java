@@ -27,15 +27,13 @@ public class DialogListAdapter extends Dialog {
     private DeviceListArrayAdapter adapter;
     private BluetoothAdapter BTAdapter;
 
-    private String UUID;
+    private BluetoothDevice UUID;
 
     public DialogListAdapter(Activity a) {
         super(a);
         // TODO Auto-generated constructor stub
         this.c = a;
-        this.adapter = new DeviceListArrayAdapter(c, new ArrayList<BluetoothDevice>());
-        this.BTAdapter = BluetoothHelper.BTAdapter;
-        adapter.clear();
+        this.adapter = new DeviceListArrayAdapter(c, BluetoothHelper.getBondedDevices());
     }
 
     @Override
@@ -46,39 +44,10 @@ public class DialogListAdapter extends Dialog {
 
         ListView l = findViewById(R.id.lista);
         l.setAdapter(this.adapter);
-
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-
-        c.registerReceiver(bReciever, filter);
-        BTAdapter.startDiscovery();
-
-        this.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                c.unregisterReceiver(bReciever);
-                BTAdapter.cancelDiscovery();
-            }
-        });
     }
 
 
-
-    private final BroadcastReceiver bReciever = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // Create a new device item
-                // Add it to our adapter
-
-                Toast.makeText(adapter.getContext(), "OOOOOOOO", Toast.LENGTH_SHORT);
-                adapter.add(device);
-            }
-        }
-    };
-
-
-    public String getSelected() {
+    public BluetoothDevice getSelected() {
         return adapter.getSelected();
     }
 }

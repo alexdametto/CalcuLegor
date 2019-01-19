@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,8 +37,6 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private String MY_UUID = "00001101-0000-1000-8000-00805f9b34fb";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,74 +66,7 @@ public class MainActivity extends AppCompatActivity
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
-        getUUID();
-
-        BluetoothHelper.BTAdapter = BluetoothAdapter.getDefaultAdapter();
-        // Phone does not support Bluetooth so let the user know and exit.
-        if (BluetoothHelper.BTAdapter == null) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Not compatible")
-                    .setMessage("Your phone does not support Bluetooth")
-                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            System.exit(0);
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        } else if (!BluetoothHelper.BTAdapter.isEnabled()) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Bluetooth non attivo")
-                    .setMessage("Il bluetooth non è attivo")
-                    .setPositiveButton("Attiva", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intentOpenBluetoothSettings = new Intent();
-                            intentOpenBluetoothSettings.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
-                            startActivity(intentOpenBluetoothSettings);
-
-                            scegliDispositivo();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        } else {
-            scegliDispositivo();
-        }
-    }
-
-
-    private void scegliDispositivo() {
-        final DialogListAdapter cdd = new DialogListAdapter(MainActivity.this);
-        cdd.show();
-
-        cdd.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                String res = cdd.getSelected();
-
-
-            }
-        });
-    }
-
-    private void getUUID() {
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 2);
-        }
-
-        TelephonyManager teleManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        String tmSerial = teleManager.getSimSerialNumber();
-        String tmDeviceId = teleManager.getDeviceId();
-        String androidId = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-        if (tmSerial  == null) tmSerial   = "1";
-        if (tmDeviceId== null) tmDeviceId = "1";
-        if (androidId == null) androidId  = "1";
-        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDeviceId.hashCode() << 32) | tmSerial.hashCode());
-        String uniqueId = deviceUuid.toString();
-
-        this.MY_UUID = uniqueId;
+        BluetoothHelper.scegliDispositivo(this);
     }
 
     @Override

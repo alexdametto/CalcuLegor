@@ -1,7 +1,13 @@
 package bdltz;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import Lego.Packet;
+import dametto.alex.Exp;
+import dametto.alex.Step;
+import dametto.alex.Steps;
+import dametto.alex.SyntaxException;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
@@ -10,7 +16,7 @@ import lejos.robotics.SampleProvider;
 public class SimplePrinter {
 	// RIVEDERE TUTTE QUESTE VARIABILI!!!!!!!
 	
-	private ArrayList<String> container;
+	private String toPrint;
 	
 	// FOGLI DA 14 cm di larghezza, lunghi come un A4 (quindi 14 cm x 29.7 cm)
 	//private static final double PAPER_CM_X = 14; // da rivedere, probabilmente 15 cm
@@ -50,58 +56,82 @@ public class SimplePrinter {
 		
 	private static final EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S1);
 	private final SampleProvider sp = us.getDistanceMode();
-		
 	
 	private int defaultSpeed = 360; // 720 degress per seconds
 	
-	SimplePrinter(ArrayList<String> toPrint) {
-		this.container = toPrint;
-	}
 	
-	SimplePrinter(String toPrint) {
-		this.container = new ArrayList<String>();
-		container.add(toPrint);
-		
+	BTHelper bt;
+	
+	SimplePrinter(String toPrint, BTHelper bt) {
+		this.bt = bt;
+		this.toPrint = toPrint;
 		//System.out.println(charForRow + ", " + numberRow);
 	}
 	
 	public void startPrinting() {	
 		attendiFoglio();
 		
+		int index = 0;
 		
+		Exp e = new Exp(toPrint);
+		Steps passi = null;
 		
+		try {
+			e.parse();
+			passi = e.valutaPassoAPasso();
+		} catch (Exception e1) {
+			Packet p = new Packet(Packet.KEY_ERROR, e1.getMessage());
+			try {
+				bt.send(p);
+			} catch (IOException e2) {}
+		}
 		
-		for(String passo : container) {
-			passo = passo.toLowerCase();
-			
-			for(int i = 0; i < passo.length(); ++i) {
-				moveInsideLetter(0, 0);
-				char c = passo.charAt(i);
+		for(Step a : passi.getSteps()) {
+			if(!a.getDescription().equals("")) {
+				String passo = a.getExp().toLowerCase();
+				String description = a.getDescription().toLowerCase();
 				
-				printChar(c);
-								
-				indexInRow++;
-				// change to next with checkes...
-				if(indexInRow > charForRow) {
-					// finita la riga
-					// andare a capo
+				// ATTENTO AGLI INDICI, POTREBBE NON FUNZIONARE...
+				
+				Packet pack = new Packet(Packet.KEY_INFO_EXP, (index+1) + ";" + passi.getSteps().size() +  ";" + description);
+				// send pack
+				try {
+					bt.send(pack);
+				} catch (IOException e1) {}
+
+				
+				for(int i = 0; i < passo.length(); ++i) {
+					moveInsideLetter(0, 0);
+					char c = passo.charAt(i);
 					
-					indexRow++;
-					indexInRow = 0;
+					printChar(c);
+									
+					indexInRow++;
+					// change to next with checkes...
+					if(indexInRow > charForRow) {
+						// finita la riga
+						// andare a capo
+						
+						indexRow++;
+						indexInRow = 0;
+					}
+					if(indexRow > numberRow) {
+						cambiaFoglio();
+						indexRow = 0;
+						indexInRow = 0;
+					}
 				}
+				
+				indexInRow = 0;
+				indexRow++;
+				
 				if(indexRow > numberRow) {
+					cambiaFoglio();
 					indexRow = 0;
 					indexInRow = 0;
-					cambiaFoglio();
 				}
-			}
-			
-			indexInRow = 0;
-			indexRow++;
-			
-			if(indexRow > numberRow) {
-				indexRow = 0;
-				cambiaFoglio();
+				
+				index++;
 			}
 		}
 		
@@ -113,6 +143,13 @@ public class SimplePrinter {
 	}
 	
 	private void espelliFoglio() {
+		// spostare la penna in centro....
+		
+		currentX = PAPER_MAX_X / 2;
+		moveInsideLetter(0, 0);
+		
+		// DA TESTARE!!
+		
 		if(currentZ == 0) {
 			Motor.C.rotate(degreePerZ);
 			currentZ = degreePerZ;

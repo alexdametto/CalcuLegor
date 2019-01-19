@@ -21,7 +21,10 @@ public class BTHelper {
 	private ObjectInputStream input;
 	
 	
-	private static int DELAY_BATTERY = 10;
+	private static int DELAY_BATTERY = 1;
+	
+	BatteryInfo b;
+	ReadEvents r;
 	
 	
 	public BTHelper() {
@@ -35,69 +38,100 @@ public class BTHelper {
 		
 		try {
 			output = new ObjectOutputStream(conn.openOutputStream());
+			output.flush();
 			input = new ObjectInputStream(conn.openDataInputStream());	
 		}catch(IOException ex) {
 			ex.printStackTrace();
 			return;
 		}
 		
-		Thread read = new Thread(new ReadEvents());
+		b = new BatteryInfo();
+		r = new ReadEvents();
+		
+		Thread read = new Thread(r);
 		read.start();
 		
-		Thread batt = new Thread(new BatteryInfo());
+		Thread batt = new Thread(b);
 		batt.start();
+	}
+	
+	public void send(Packet pack) throws IOException {
+		// INVIO CON SINCRONIZZAZIONE
+		synchronized(output) {
+			output.writeObject(pack);
+			output.flush();
+		}
 	}
 	
 	
 	private class BatteryInfo implements Runnable {
-
+		private boolean run = true;
+		
+		public void terminate() {
+			this.run = false;
+		}
+		
 		@Override
 		public void run() {
 			
 		    Power power = BrickFinder.getDefault().getPower();
 			
 			try {
-				while(true) {
+				while(run) {
+					// getVoltage : 2.5 = x : 100
 					
-					// getVoltage : perc = 9 : 100
-					
-					double perc = power.getVoltage() * 9 / 100;
+					double perc = (power.getVoltage()-6.5) * 100 / 2.5;
 					
 					DecimalFormat df = new DecimalFormat("#.00");
 					
 					Packet pack = new Packet(Packet.KEY_BATTERY, df.format(perc));
 					
-					// INVIO CON SINCRONIZZAZIONE
-					synchronized(output) {
-						output.writeObject(pack);
-					}
-					
+					send(pack);
 					
 					TimeUnit.SECONDS.sleep(DELAY_BATTERY);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				disconnect();
 			}
 			
 		}
 	}
 	
+	public void disconnect() {
+		b.terminate();
+		r.terminate();
+	}
+	
 	
 	private class ReadEvents implements Runnable {
+		private boolean run = true;
+		
+		public void terminate() {
+			this.run = false;
+		}
+		
 		@Override
 		public void run() {
-			
 			try {
-				while(true) {
+				while(run) {
 					Packet p;
 					
-					// non server synchronized perchè è bloccante già di suo ed è l'unica che riceve
+					// non server synchronized perch� � bloccante già di suo ed è l'unica che riceve
 					p = (Packet)input.readObject();
 					
 					int key = p.getKey();
+                    String message = p.getMessage();
 										
 					switch(key) {
 						case Packet.KEY_EXP:
+							
+							SimplePrinter s = new SimplePrinter(message, BTHelper.this);
+							s.startPrinting();
+						
+							break;
+							
+						case Packet.KEY_DISCONNECT:
+							
 							break;
 					}
 					
@@ -105,7 +139,7 @@ public class BTHelper {
 					
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				disconnect();
 			}
 		}
 	}

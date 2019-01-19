@@ -1,34 +1,28 @@
 package com.bdltz.calculegor;
 
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.app.Fragment;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Camera;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.bdltz.calculegor.Helpers.BluetoothHelper;
 
-import com.bdltz.calculegor.Adapters.DeviceListArrayAdapter;
-import com.bdltz.calculegor.Adapters.DialogListAdapter;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -37,11 +31,10 @@ public class FragmentCalcolatrice extends Fragment {
 
     ImageButton voce, camera;
     EditText espressione;
+    TextView connected;
     Button invia;
 
-    ArrayAdapter<BluetoothDevice> adapter;
-
-    BluetoothAdapter BTAdapter;
+    SocketMonitor sm;
 
     private final static int REQ_CODE_SPEECH_INPUT = 1;
 
@@ -50,17 +43,25 @@ public class FragmentCalcolatrice extends Fragment {
     public View onCreateView(LayoutInflater infilater, ViewGroup container, Bundle savedInstanceState)
     {
         rootview = infilater.inflate(R.layout.fragment_calcolatrice, container, false);
+        setHasOptionsMenu(true);
         return rootview;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-        voce = (ImageButton)rootview.findViewById(R.id.mic);
-        camera = (ImageButton)rootview.findViewById(R.id.camera);
-        espressione = (EditText)rootview.findViewById(R.id.espressione);
-        invia = (Button)rootview.findViewById(R.id.invia);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        voce = rootview.findViewById(R.id.mic);
+        camera = rootview.findViewById(R.id.camera);
+        espressione = rootview.findViewById(R.id.espressione);
+        invia = rootview.findViewById(R.id.invia);
+        connected = rootview.findViewById(R.id.conn);
 
         voce.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,9 +84,20 @@ public class FragmentCalcolatrice extends Fragment {
             }
         });
 
-        ArrayList<BluetoothDevice> lista = new ArrayList<>();
+        sm = new SocketMonitor(connected);
 
-        adapter = new DeviceListArrayAdapter(getActivity(), lista);
+        Thread t2 = new Thread(sm);
+        t2.start();
+    }
+
+    @Override
+    public void onDestroy() {
+        try {
+            BluetoothHelper.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 
     private void riconosciVoce(){
@@ -96,7 +108,7 @@ public class FragmentCalcolatrice extends Fragment {
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
         } catch (ActivityNotFoundException a) {
-
+            a.printStackTrace();
         }
     }
 
@@ -138,25 +150,44 @@ public class FragmentCalcolatrice extends Fragment {
     }
 
     public void clickPulsante() {
-        this.BTAdapter = BluetoothAdapter.getDefaultAdapter();
-        // Phone does not support Bluetooth so let the user know and exit.
-        if (BTAdapter == null) {
-            new AlertDialog.Builder(rootview.getContext())
-                    .setTitle("Not compatible")
-                    .setMessage("Your phone does not support Bluetooth")
-                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            System.exit(0);
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        }
-        else {
-            // fare controllo se bluetooth è attivato
 
-            //DialogListAdapter cdd=new DialogListAdapter(getActivity(), adapter, BTAdapter);
-            //cdd.show();
+    }
+
+
+    private static class SocketMonitor implements Runnable {
+        private TextView text;
+        private boolean exe = true;
+
+        public SocketMonitor(TextView text) {
+            this.text = text;
+        }
+
+        public void terminate() {
+            this.exe = false;
+        }
+
+        @Override
+        public void run() {
+            try {
+                while(exe) {
+                    final boolean conn = BluetoothHelper.isConnected();
+
+                    text.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(conn)
+                                text.setText("Connesso...");
+                            else text.setText("Non connesso...");
+                        }
+                    });
+
+                    Thread.sleep(1000);
+
+                    // delay?
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

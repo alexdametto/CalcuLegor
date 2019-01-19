@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bdltz.calculegor.Helpers.BluetoothHelper;
 import com.bdltz.calculegor.R;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
     private final List<BluetoothDevice> list;
     private final Activity context;
 
-    private String selected = "";
+    private BluetoothDevice selected = null;
 
     static class ViewHolder {
         protected TextView testo;
@@ -52,7 +53,7 @@ public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
         holder.testo.setText(list.get(position).getName() + " (" + list.get(position).getAddress() + ")");
 
         if(list.get(position).getName() == "EV3")
-            this.selected = list.get(position).getAddress();
+            this.selected = list.get(position);
 
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -66,10 +67,10 @@ public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
     }
 
     public void openConnection(BluetoothDevice bt) {
-        this.selected = bt.getAddress();
+        this.selected = bt;
     }
 
-    public String getSelected() {
+    public BluetoothDevice getSelected() {
         return this.selected;
     }
 }

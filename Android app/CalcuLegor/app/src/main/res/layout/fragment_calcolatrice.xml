@@ -51,6 +51,12 @@
         android:text="@string/invia"
         android:background="@drawable/background_buttons"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:id="@+id/conn"/>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
