@@ -20,11 +20,16 @@ public class Main {
 	    
 	    //SimplePrinter printer = new SimplePrinter("ciao");
 	    //printer.startPrinting();
-				
-		BTHelper bt = new BTHelper();
-	    
-	    System.out.println("Finished.");
-	    
+		
+		//Motor.C.rotate(280);
+		
+		Button.waitForAnyPress();
+			
+		SimplePrinter a = new SimplePrinter("5+4-3", null);
+		a.startPrinting();
+		
+		//BTHelper bt = new BTHelper();
+	    	    
 	    Button.waitForAnyPress();
 	}
 }

@@ -32,16 +32,8 @@ public class SimplePrinter {
 	private static final double DELAY_X = 0.25;
 	private static final double DELAY_Y = 0.25;
 	
-	private static final double PAPER_SENS = 0.05; 
-	
-	// remember to take it up.
-	final private int initialZ = 800;
+	private static final double PAPER_SENS = 0.04; 
 		
-	// inside the letter....
-	private double currentX = PAPER_MAX_X / 2;
-	private double currentY = 0;
-	private int currentZ = initialZ; // da cambiare con il grado
-
 	final private int charForRow = (int) Math.floor(( PAPER_MAX_X - 2 * DELAY_X ) / (LETTER_MAX_X + DELAY_X));
 	//private int indexInRow = charForRow/2;
 	private int indexInRow = 0;
@@ -52,7 +44,13 @@ public class SimplePrinter {
 	// le velocitaÂ  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
 	final private double degreePerX = 111.111111;
 	final private double degreePerY = 90.909090;
-	final private int degreePerZ = 300;
+	final private int degreePerZ = 280;
+	
+	// inside the letter....
+	private double currentX = 0;
+	private double currentY = 0;
+	private int currentZ = degreePerZ; // da cambiare con il grado
+
 		
 	private static final EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S1);
 	private final SampleProvider sp = us.getDistanceMode();
@@ -70,9 +68,7 @@ public class SimplePrinter {
 	
 	public void startPrinting() {	
 		attendiFoglio();
-		
-		int index = 0;
-		
+				
 		Exp e = new Exp(toPrint);
 		Steps passi = null;
 		
@@ -83,21 +79,28 @@ public class SimplePrinter {
 			Packet p = new Packet(Packet.KEY_ERROR, e1.getMessage());
 			try {
 				bt.send(p);
-			} catch (IOException e2) {}
+			} catch (Exception e2) {}
+		}
+		
+		int index = 0;
+		
+		int totalPassi = 0;
+		
+		for(Step a : passi.getSteps()) {
+			if(!a.getDescription().equals(""))
+				totalPassi++;
 		}
 		
 		for(Step a : passi.getSteps()) {
 			if(!a.getDescription().equals("")) {
 				String passo = a.getExp().toLowerCase();
 				String description = a.getDescription().toLowerCase();
-				
-				// ATTENTO AGLI INDICI, POTREBBE NON FUNZIONARE...
-				
-				Packet pack = new Packet(Packet.KEY_INFO_EXP, (index+1) + ";" + passi.getSteps().size() +  ";" + description);
+							
+				Packet pack = new Packet(Packet.KEY_INFO_EXP, (index+1) + ";" + totalPassi +  ";" + description);
 				// send pack
 				try {
 					bt.send(pack);
-				} catch (IOException e1) {}
+				} catch (Exception e1) {}
 
 				
 				for(int i = 0; i < passo.length(); ++i) {
@@ -135,25 +138,22 @@ public class SimplePrinter {
 			}
 		}
 		
-		
-		Motor.C.rotate((int)(initialZ-currentZ)); // prima bisogna spostare l'asse X
-		currentZ = initialZ;
-		
-		espelliFoglio();
-	}
-	
-	private void espelliFoglio() {
 		// spostare la penna in centro....
 		
-		currentX = PAPER_MAX_X / 2;
+		indexInRow = 0;
 		moveInsideLetter(0, 0);
 		
 		// DA TESTARE!!
 		
-		if(currentZ == 0) {
-			Motor.C.rotate(degreePerZ);
+		if(currentZ != degreePerZ) {
+			Motor.C.rotate((int)(degreePerZ-currentZ)); // prima bisogna spostare l'asse X
 			currentZ = degreePerZ;
 		}
+		
+		espelliFoglio();
+	}
+	
+	private void espelliFoglio() {		
 		
 		float distanceValue;
 		Motor.B.setSpeed(defaultSpeed);
@@ -164,15 +164,12 @@ public class SimplePrinter {
             distanceValue = sample[0];
         } while(distanceValue < PAPER_SENS || Float.isInfinite(distanceValue));
         
+        // continuare per un tot di secondi.....
+        
         Motor.B.stop();
 	}
 	
-	private void attendiFoglio() {
-		if(currentZ == 0) {
-			Motor.C.rotate(degreePerZ);
-			currentZ = degreePerZ;
-		}
-		
+	private void attendiFoglio() {		
 		float distanceValue;
 		Motor.B.setSpeed(defaultSpeed);
 		Motor.B.backward();
@@ -180,16 +177,21 @@ public class SimplePrinter {
     		float [] sample = new float[sp.sampleSize()];
             sp.fetchSample(sample, 0);
             distanceValue = sample[0];
+            
+            System.out.println(distanceValue);
         } while(distanceValue > PAPER_SENS && !Float.isInfinite(distanceValue));
-        Motor.B.stop();
         
-		if(currentZ != 0) {
-			Motor.C.rotate(-currentZ + degreePerZ);
-			currentZ = degreePerZ;
-		}
+        // continuare per un tot di secondi
+        
+        Motor.B.stop();
 	}
 	
 	private void cambiaFoglio() {
+		if(currentZ != degreePerZ) {
+			Motor.C.rotate((int)(degreePerZ-currentZ)); // prima bisogna spostare l'asse X
+			currentZ = degreePerZ;
+		}
+		
 		espelliFoglio();
 		attendiFoglio();
 	}

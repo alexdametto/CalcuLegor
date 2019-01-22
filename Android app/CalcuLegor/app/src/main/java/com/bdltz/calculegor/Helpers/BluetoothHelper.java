@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.ParcelUuid;
 import android.support.v7.view.menu.ActionMenuItemView;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bdltz.calculegor.Adapters.DialogListAdapter;
@@ -44,6 +46,8 @@ public class BluetoothHelper {
         outputStream.flush();
         inputStream = new ObjectInputStream(mSocket.getInputStream());
 
+        // invia packet con le impostazioni!!!!!!
+
         readEvents = new ReadEvents(a);
 
         Thread t = new Thread(readEvents);
@@ -52,6 +56,7 @@ public class BluetoothHelper {
 
     public static void send(Packet packet) throws IOException {
         outputStream.writeObject(packet);
+        outputStream.flush();
     }
 
     private static class ReadEvents implements Runnable {
@@ -102,10 +107,6 @@ public class BluetoothHelper {
                         default:
                             break;
                     }
-
-
-                    // LANCIARE QUELLO CHE SERVE!!!!
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -137,8 +138,8 @@ public class BluetoothHelper {
         } else if (!BluetoothHelper.BTAdapter.isEnabled()) {
             return new AlertDialog.Builder(a)
                     .setTitle("Bluetooth non attivo")
-                    .setMessage("Il bluetooth non è attivo")
-                    .setPositiveButton("Attiva", new DialogInterface.OnClickListener() {
+                    .setMessage("Il bluetooth non è attivo. Attivalo e riprova.")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
@@ -153,18 +154,26 @@ public class BluetoothHelper {
     public static void disconnect() throws IOException {
         // send messaggio chiusura!!!
 
-        if(readEvents != null)
-            readEvents.terminate();
+        send(new Packet(Packet.KEY_DISCONNECT, "Close"));
 
         synchronized (inputStream){
-            inputStream.close();
+            if(inputStream != null)
+                inputStream.close();
+        }
+
+        if(readEvents != null) {
+            readEvents.terminate();
         }
 
         synchronized (outputStream){
-            outputStream.close();
+            if(inputStream != null)
+                outputStream.close();
         }
 
-        mSocket.close();
+        if(mSocket != null)
+            mSocket.close();
+
+        mSocket = null;
 
         // reset grafico!!!!!!
     }
@@ -187,13 +196,20 @@ public class BluetoothHelper {
         cdd.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                BluetoothDevice res = cdd.getSelected();
+                final BluetoothDevice res = cdd.getSelected();
 
-                try {
-                    connect(res, act);
-                } catch (IOException e) {
-                    error(act, "Errore in connessione");
-                }
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            connect(res, act);
+                        } catch (IOException e) {
+                            error(act, "Errore in connessione");
+                        }
+                    }
+                });
+
+                t.start();
             }
         });
     }
@@ -204,12 +220,6 @@ public class BluetoothHelper {
 
         if(a == null)
             loadDisp(act);
-        else a.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                loadDisp(act);
-            }
-        });
     }
 
     private static void changeBatteryIcon(final Activity act, final double value) {
@@ -232,7 +242,18 @@ public class BluetoothHelper {
         act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                TextView info = act.findViewById(R.id.infoBar);
+                ProgressBar pBar = act.findViewById(R.id.progressBar);
 
+                pBar.setProgress(currentPasso);
+                pBar.setMax(finPasso);
+
+                info.setText(currentPasso + "/" + finPasso);
+
+                if(currentPasso == finPasso) {
+                    Button btn = act.findViewById(R.id.invia);
+                    btn.setEnabled(true);
+                }
             }
         });
     }
@@ -242,7 +263,7 @@ public class BluetoothHelper {
             @Override
             public void run() {
                 new AlertDialog.Builder(act)
-                        .setTitle("Error")
+                        .setTitle("Errore")
                         .setMessage(text)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {

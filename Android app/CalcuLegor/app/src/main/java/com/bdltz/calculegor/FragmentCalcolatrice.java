@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import Lego.Packet;
+
 import static android.app.Activity.RESULT_OK;
 
 public class FragmentCalcolatrice extends Fragment {
@@ -94,7 +96,7 @@ public class FragmentCalcolatrice extends Fragment {
     public void onDestroy() {
         try {
             BluetoothHelper.disconnect();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         super.onDestroy();
@@ -150,7 +152,15 @@ public class FragmentCalcolatrice extends Fragment {
     }
 
     public void clickPulsante() {
+        Button btn = rootview.findViewById(R.id.invia);
+        btn.setEnabled(false);
 
+        EditText e = rootview.findViewById(R.id.espressione);
+        try {
+            BluetoothHelper.send(new Packet(Packet.KEY_EXP, e.getText().toString()));
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
     }
 
 
@@ -182,8 +192,6 @@ public class FragmentCalcolatrice extends Fragment {
                     });
 
                     Thread.sleep(1000);
-
-                    // delay?
                 }
             } catch (Exception e) {
                 e.printStackTrace();

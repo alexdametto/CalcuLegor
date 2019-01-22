@@ -98,8 +98,10 @@ public class BTHelper {
 	}
 	
 	public void disconnect() {
-		b.terminate();
-		r.terminate();
+		//b.terminate();
+		//r.terminate();
+		
+		//System.exit(0); // test 
 	}
 	
 	
@@ -116,6 +118,7 @@ public class BTHelper {
 				while(run) {
 					Packet p;
 					
+					
 					// non server synchronized perchè è bloccante giÃ  di suo ed Ã¨ l'unica che riceve
 					p = (Packet)input.readObject();
 					
@@ -131,6 +134,8 @@ public class BTHelper {
 							break;
 							
 						case Packet.KEY_DISCONNECT:
+							
+							disconnect();
 							
 							break;
 					}
