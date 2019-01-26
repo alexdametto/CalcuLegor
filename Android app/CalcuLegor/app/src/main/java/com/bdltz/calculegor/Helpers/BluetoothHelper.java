@@ -33,6 +33,10 @@ public class BluetoothHelper {
 
     private static ReadEvents readEvents;
 
+    private static Thread read;
+
+    private static boolean connesso = false;
+
     public static void connect(BluetoothDevice device, Activity a) throws IOException {
         if(device == null)
             return;
@@ -42,6 +46,8 @@ public class BluetoothHelper {
 
         mSocket.connect();
 
+        connesso = true;
+
         outputStream = new ObjectOutputStream(mSocket.getOutputStream());
         outputStream.flush();
         inputStream = new ObjectInputStream(mSocket.getInputStream());
@@ -50,13 +56,15 @@ public class BluetoothHelper {
 
         readEvents = new ReadEvents(a);
 
-        Thread t = new Thread(readEvents);
-        t.start();
+        read = new Thread(readEvents);
+        read.start();
     }
 
     public static void send(Packet packet) throws IOException {
-        outputStream.writeObject(packet);
-        outputStream.flush();
+        if(connesso) {
+            outputStream.writeObject(packet);
+            outputStream.flush();
+        }
     }
 
     private static class ReadEvents implements Runnable {
@@ -104,6 +112,10 @@ public class BluetoothHelper {
                             error(a, message);
                             break;
 
+                        case Packet.KEY_DISCONNECT:
+                            disconnect(false);
+                            break;
+
                         default:
                             break;
                     }
@@ -115,30 +127,17 @@ public class BluetoothHelper {
     }
 
     public static boolean isConnected() {
-        if(mSocket == null)
-            return false;
-        else return mSocket.isConnected();
+        return connesso;
     }
 
-    private static AlertDialog checkBluetooth(final Activity a) {
+    private static boolean checkBluetooth(final Activity a) {
         BluetoothHelper.BTAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Phone does not support Bluetooth so let the user know and exit.
         if (BluetoothHelper.BTAdapter == null) {
-            return new AlertDialog.Builder(a)
-                    .setTitle("Not compatible")
-                    .setMessage("Your phone does not support Bluetooth")
-                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            System.exit(0);
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        } else if (!BluetoothHelper.BTAdapter.isEnabled()) {
-            return new AlertDialog.Builder(a)
-                    .setTitle("Bluetooth non attivo")
-                    .setMessage("Il bluetooth non è attivo. Attivalo e riprova.")
+            new AlertDialog.Builder(a)
+                    .setTitle(a.getText(R.string.key_bluetooth_supporto))
+                    .setMessage(a.getText(R.string.key_telefono_supporto))
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -146,34 +145,68 @@ public class BluetoothHelper {
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
+            return false;
+        } else if (!BluetoothHelper.BTAdapter.isEnabled()) {
+            new AlertDialog.Builder(a)
+                    .setTitle(a.getText(R.string.key_bluetooth_disabilitato))
+                    .setMessage(a.getText(R.string.key_attiva_bluetooth))
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+            return false;
         }
-        return null;
+        return true;
     }
 
     // invocarlo quando si chiude app
-    public static void disconnect() throws IOException {
+    public static void disconnect(boolean mandaPack) throws IOException {
         // send messaggio chiusura!!!
 
-        send(new Packet(Packet.KEY_DISCONNECT, "Close"));
+        if(mandaPack)
+            send(new Packet(Packet.KEY_DISCONNECT, "Close"));
+        if(read != null) {
+            read.interrupt();
+        }
 
         synchronized (inputStream){
-            if(inputStream != null)
-                inputStream.close();
+            if(inputStream != null) {
+                try {
+                    inputStream.close();
+                }catch (Exception ex) {
+
+                }
+            }
         }
 
         if(readEvents != null) {
             readEvents.terminate();
         }
 
-        synchronized (outputStream){
-            if(inputStream != null)
+        if(outputStream != null) {
+            try {
                 outputStream.close();
+            }catch (Exception ex) {
+
+            }
         }
 
-        if(mSocket != null)
-            mSocket.close();
+        if(mSocket != null) {
+            try {
+                mSocket.close();
+            }catch (Exception ex) {
+
+            }
+        }
 
         mSocket = null;
+
+        connesso = false;
+
 
         // reset grafico!!!!!!
     }
@@ -204,7 +237,7 @@ public class BluetoothHelper {
                         try {
                             connect(res, act);
                         } catch (IOException e) {
-                            error(act, "Errore in connessione");
+                            error(act, act.getText(R.string.key_connection_error).toString());
                         }
                     }
                 });
@@ -216,9 +249,9 @@ public class BluetoothHelper {
 
     public static void scegliDispositivo(final Activity act) {
         // controllare se bluetooth è attivo oppure no !!!!
-        AlertDialog a = checkBluetooth(act);
+        boolean ok = checkBluetooth(act);
 
-        if(a == null)
+        if(ok)
             loadDisp(act);
     }
 
@@ -263,9 +296,9 @@ public class BluetoothHelper {
             @Override
             public void run() {
                 new AlertDialog.Builder(act)
-                        .setTitle("Errore")
+                        .setTitle(act.getText(R.string.key_error))
                         .setMessage(text)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }

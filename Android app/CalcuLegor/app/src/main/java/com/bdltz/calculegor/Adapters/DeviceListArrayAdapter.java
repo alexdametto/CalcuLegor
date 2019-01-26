@@ -18,21 +18,20 @@ import com.bdltz.calculegor.R;
 import java.util.List;
 
 public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
-
-
     private final List<BluetoothDevice> list;
     private final Activity context;
-
+    private final DialogListAdapter adapter;
     private BluetoothDevice selected = null;
 
     static class ViewHolder {
         protected TextView testo;
     }
 
-    public DeviceListArrayAdapter(Activity context, List<BluetoothDevice> list) {
+    public DeviceListArrayAdapter(Activity context, List<BluetoothDevice> list, DialogListAdapter adapter) {
         super(context, R.layout.bt_device_row, list);
         this.context = context;
         this.list = list;
+        this.adapter = adapter;
     }
 
     @Override
@@ -52,14 +51,11 @@ public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.testo.setText(list.get(position).getName() + " (" + list.get(position).getAddress() + ")");
 
-        if(list.get(position).getName() == "EV3")
-            this.selected = list.get(position);
-
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openConnection(list.get(position));
+                adapter.dismiss();
             }
         });
 

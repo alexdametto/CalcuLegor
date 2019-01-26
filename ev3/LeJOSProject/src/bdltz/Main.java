@@ -22,13 +22,8 @@ public class Main {
 	    //printer.startPrinting();
 		
 		//Motor.C.rotate(280);
-		
-		Button.waitForAnyPress();
-			
-		SimplePrinter a = new SimplePrinter("5+4-3", null);
-		a.startPrinting();
-		
-		//BTHelper bt = new BTHelper();
+				
+		BTHelper bt = new BTHelper();
 	    	    
 	    Button.waitForAnyPress();
 	}

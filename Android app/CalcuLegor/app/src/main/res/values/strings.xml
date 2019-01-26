@@ -13,4 +13,15 @@
     <string name="key_audio_robot">Enable/disable printer audio</string>
     <string name="key_vibrazione">Enable/disable phone vibration</string>
     <string name="key_permessi">Enable system permission</string>
+    <string name="key_connesso">Connected</string>
+    <string name="key_disconnesso">Disconnected</string>
+    <string name="key_connetti">Connect</string>
+    <string name="key_disconnetti">Disconnect</string>
+    <string name="key_connection_error">Connection error</string>
+    <string name="key_error">Error</string>
+    <string name="key_bluetooth_supporto">Bluetooth not supported</string>
+    <string name="key_telefono_supporto">Your phone does not support Bluetooth.</string>
+    <string name="key_bluetooth_disabilitato">Bluetooth not enabled</string>
+    <string name="key_attiva_bluetooth">Bluetooth is disabled. Enable it and retry.</string>
+    <string name="key_scegli_dispositivo">Select an EV3 device</string>
 </resources>

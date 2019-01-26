@@ -178,7 +178,6 @@ public class SimplePrinter {
             sp.fetchSample(sample, 0);
             distanceValue = sample[0];
             
-            System.out.println(distanceValue);
         } while(distanceValue > PAPER_SENS && !Float.isInfinite(distanceValue));
         
         // continuare per un tot di secondi

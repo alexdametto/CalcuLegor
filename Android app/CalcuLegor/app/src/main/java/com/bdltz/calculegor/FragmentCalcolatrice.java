@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,7 +35,7 @@ public class FragmentCalcolatrice extends Fragment {
     ImageButton voce, camera;
     EditText espressione;
     TextView connected;
-    Button invia;
+    Button invia, btnConn;
 
     SocketMonitor sm;
 
@@ -64,6 +65,7 @@ public class FragmentCalcolatrice extends Fragment {
         espressione = rootview.findViewById(R.id.espressione);
         invia = rootview.findViewById(R.id.invia);
         connected = rootview.findViewById(R.id.conn);
+        btnConn = rootview.findViewById(R.id.connetti);
 
         voce.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,20 +88,31 @@ public class FragmentCalcolatrice extends Fragment {
             }
         });
 
-        sm = new SocketMonitor(connected);
+        btnConn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(btnConn.getText().toString().equals(getText(R.string.key_connetti)))
+                    connect();
+                else disconnect();
+            }
+        });
+
+        sm = new SocketMonitor(connected, btnConn, invia, getActivity());
 
         Thread t2 = new Thread(sm);
         t2.start();
     }
 
-    @Override
-    public void onDestroy() {
+    public void connect() {
+        BluetoothHelper.scegliDispositivo(getActivity());
+    }
+
+    public void disconnect() {
         try {
-            BluetoothHelper.disconnect();
-        } catch (Exception e) {
+            BluetoothHelper.disconnect(true);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        super.onDestroy();
     }
 
     private void riconosciVoce(){
@@ -166,10 +179,15 @@ public class FragmentCalcolatrice extends Fragment {
 
     private static class SocketMonitor implements Runnable {
         private TextView text;
+        private Button btn, btnInvia;
         private boolean exe = true;
+        private Activity a;
 
-        public SocketMonitor(TextView text) {
+        public SocketMonitor(TextView text, Button btn, Button btnInvia, Activity a) {
             this.text = text;
+            this.a = a;
+            this.btn = btn;
+            this.btnInvia = btnInvia;
         }
 
         public void terminate() {
@@ -185,9 +203,37 @@ public class FragmentCalcolatrice extends Fragment {
                     text.post(new Runnable() {
                         @Override
                         public void run() {
-                            if(conn)
-                                text.setText("Connesso...");
-                            else text.setText("Non connesso...");
+                            if(conn) {
+                                text.setText(a.getText(R.string.key_connesso));
+                            }
+                            else {
+                                text.setText(a.getText(R.string.key_disconnesso));
+                            }
+                        }
+                    });
+
+                    btn.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(conn) {
+                                btn.setText(a.getText(R.string.key_disconnetti));
+                            }
+                            else {
+                                btn.setText(a.getText(R.string.key_connetti));
+                            }
+                        }
+                    });
+
+                    btnInvia.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(conn) {
+                                btnInvia.setEnabled(true);
+                            }
+                            else {
+                                btnInvia.setEnabled(false);
+                                // CAMBIARE GRAFICA PULSANTE
+                            }
                         }
                     });
 

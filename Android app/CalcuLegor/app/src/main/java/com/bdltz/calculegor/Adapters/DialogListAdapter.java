@@ -33,7 +33,7 @@ public class DialogListAdapter extends Dialog {
         super(a);
         // TODO Auto-generated constructor stub
         this.c = a;
-        this.adapter = new DeviceListArrayAdapter(c, BluetoothHelper.getBondedDevices());
+        this.adapter = new DeviceListArrayAdapter(c, BluetoothHelper.getBondedDevices(), this);
     }
 
     @Override

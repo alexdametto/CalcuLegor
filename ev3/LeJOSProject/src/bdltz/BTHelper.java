@@ -20,11 +20,11 @@ public class BTHelper {
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
 	
+	private ReadEvents readEvents;
+	private Thread read;
+	private BatteryInfo battery;
 	
 	private static int DELAY_BATTERY = 1;
-	
-	BatteryInfo b;
-	ReadEvents r;
 	
 	
 	public BTHelper() {
@@ -45,13 +45,13 @@ public class BTHelper {
 			return;
 		}
 		
-		b = new BatteryInfo();
-		r = new ReadEvents();
+		battery = new BatteryInfo();
+		readEvents = new ReadEvents();
 		
-		Thread read = new Thread(r);
+		read = new Thread(readEvents);
 		read.start();
 		
-		Thread batt = new Thread(b);
+		Thread batt = new Thread(battery);
 		batt.start();
 	}
 	
@@ -82,7 +82,7 @@ public class BTHelper {
 					
 					double perc = (power.getVoltage()-6.5) * 100 / 2.5;
 					
-					DecimalFormat df = new DecimalFormat("#.00");
+					DecimalFormat df = new DecimalFormat("#");
 					
 					Packet pack = new Packet(Packet.KEY_BATTERY, df.format(perc));
 					
@@ -91,18 +91,51 @@ public class BTHelper {
 					TimeUnit.SECONDS.sleep(DELAY_BATTERY);
 				}
 			} catch (Exception e) {
-				disconnect();
+				try {
+					disconnect(false);
+				} catch (IOException e1) {
+				}
 			}
 			
 		}
 	}
 	
-	public void disconnect() {
-		//b.terminate();
-		//r.terminate();
-		
-		//System.exit(0); // test 
-	}
+	public void disconnect(boolean mandaPack) throws IOException {
+        // send messaggio chiusura!!!
+
+        if(mandaPack)
+            send(new Packet(Packet.KEY_DISCONNECT, "Close"));
+        
+        if(read != null)
+        	read.interrupt();
+
+        synchronized (input){
+            if(input != null)
+            	input.close();
+        }
+
+        if(readEvents != null) {
+            readEvents.terminate();
+        }
+        
+        if(battery != null) {
+        	battery.terminate();
+        }
+
+        synchronized (output){
+            if(output != null)
+            	output.close();
+        }
+
+        if(conn != null)
+            conn.close();
+
+        conn = null;
+        
+        System.exit(0);
+
+        // reset grafico!!!!!!
+    }
 	
 	
 	private class ReadEvents implements Runnable {
@@ -119,7 +152,7 @@ public class BTHelper {
 					Packet p;
 					
 					
-					// non server synchronized perch� � bloccante già di suo ed è l'unica che riceve
+					// non server synchronized perch� � bloccante già di suo ed è l'unica che riceve
 					p = (Packet)input.readObject();
 					
 					int key = p.getKey();
@@ -135,7 +168,7 @@ public class BTHelper {
 							
 						case Packet.KEY_DISCONNECT:
 							
-							disconnect();
+							disconnect(false);
 							
 							break;
 					}
@@ -144,7 +177,10 @@ public class BTHelper {
 					
 				}
 			} catch (Exception e) {
-				disconnect();
+				try {
+					disconnect(false);
+				} catch (IOException e1) {
+				}
 			}
 		}
 	}

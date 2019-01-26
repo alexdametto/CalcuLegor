@@ -49,17 +49,8 @@
         android:layout_marginRight="10dp"
         android:id="@+id/invia"
         android:text="@string/invia"
-        android:background="@drawable/background_buttons"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:id="@+id/connetti"
-        android:text="Connetti"
-        android:background="@drawable/background_buttons"/>
+        android:enabled="false"
+        android:background="@drawable/button_with_disable"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -71,6 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:layout_weight="0.5"
         android:gravity="center">
 
         <ProgressBar
@@ -96,5 +88,14 @@
             android:gravity="center"
             android:textAlignment="center"/>
     </FrameLayout>
+
+    <Button
+        android:layout_weight="1.5"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="@color/white"
+        android:id="@+id/connetti"
+        android:text="@string/key_connetti"
+        android:background="@drawable/background_buttons_connect"/>
 
 </LinearLayout>

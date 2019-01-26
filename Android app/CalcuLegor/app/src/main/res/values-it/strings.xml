@@ -8,4 +8,15 @@
     <string name="key_audio_robot">Abilita/disabilita l\'audio della stampante</string>
     <string name="key_vibrazione">Abilita/disabilita la vibrazione del telefono</string>
     <string name="key_permessi">Abilita permessi di sistema</string>
+    <string name="key_connesso">Connesso</string>
+    <string name="key_disconnesso">Disconnesso</string>
+    <string name="key_connetti">Connetti</string>
+    <string name="key_disconnetti">Disconnetti</string>
+    <string name="key_connection_error">Connection error</string>
+    <string name="key_error">Errore</string>
+    <string name="key_bluetooth_supporto">Bluetooth non supportato</string>
+    <string name="key_telefono_supporto">Il tuo telefono non supporta il bluetooth.</string>
+    <string name="key_bluetooth_disabilitato">Bluetooth non attivato</string>
+    <string name="key_attiva_bluetooth">Bluetooth disabilitato. Attivalo e riprova.</string>
+    <string name="key_scegli_dispositivo">Scegli il dispositivo EV3</string>
 </resources>
