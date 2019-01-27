@@ -1,9 +1,6 @@
 package bdltz;
 
-import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
-import lejos.hardware.Power;
-import lejos.hardware.motor.Motor;
 
 public class Main {
 	public static void main(String[] args) {

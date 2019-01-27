@@ -9,20 +9,21 @@
         android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/audio"
         android:text="@string/key_audio_robot"/>
 
     <Switch
         android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/vibrazione"
         android:text="@string/key_vibrazione"/>
 
-    <Button
+    <Switch
         android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_buttons"
-        android:text="@string/key_permessi"
-        android:textColor="@color/white"/>
+        android:id="@+id/clickProcedere"
+        android:text="@string/key_click_procedere"/>
 
 </LinearLayout>

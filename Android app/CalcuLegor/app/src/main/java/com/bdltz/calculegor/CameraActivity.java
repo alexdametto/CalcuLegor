@@ -2,6 +2,10 @@ package com.bdltz.calculegor;
 
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +34,6 @@ public class CameraActivity extends AppCompatActivity {
     private SurfaceView mSurfaceView;
     private TextView mTextView;
 
-    private static final int RC_HANDLE_CAMERA_PERM = 2;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,9 +45,31 @@ public class CameraActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             startTextRecognizer();
         } else {
-            askCameraPermission();
+            new AlertDialog.Builder(this)
+                    .setTitle(getText(R.string.key_error))
+                    .setMessage(getText(R.string.key_qualcosa_storto))
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent returnIntent = new Intent();
+                            setResult(Activity.RESULT_CANCELED, returnIntent);
+                            finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
 
+        ImageButton btn = findViewById(R.id.foto);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String testo = mTextView.getText().toString();
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result",testo);
+                setResult(Activity.RESULT_OK,returnIntent);
+                finish();
+            }
+        });
     }
 
     @Override
@@ -56,7 +82,18 @@ public class CameraActivity extends AppCompatActivity {
         mTextRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
 
         if (!mTextRecognizer.isOperational()) {
-            Toast.makeText(getApplicationContext(), "Oops ! Not able to start the text recognizer ...", Toast.LENGTH_LONG).show();
+            new AlertDialog.Builder(this)
+                    .setTitle(getText(R.string.key_error))
+                    .setMessage(getText(R.string.key_qualcosa_storto))
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent returnIntent = new Intent();
+                            setResult(Activity.RESULT_CANCELED, returnIntent);
+                            finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         } else {
             mCameraSource = new CameraSource.Builder(getApplicationContext(), mTextRecognizer)
                     .setFacing(CameraSource.CAMERA_FACING_BACK)
@@ -75,7 +112,18 @@ public class CameraActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     } else {
-                        askCameraPermission();
+                        new AlertDialog.Builder(CameraActivity.this)
+                                .setTitle(getText(R.string.key_error))
+                                .setMessage(getText(R.string.key_qualcosa_storto))
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent returnIntent = new Intent();
+                                        setResult(Activity.RESULT_CANCELED, returnIntent);
+                                        finish();
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
                     }
                 }
 
@@ -118,33 +166,5 @@ public class CameraActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode != RC_HANDLE_CAMERA_PERM) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            return;
-        }
-
-        if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startTextRecognizer();
-            return;
-        }
-
-    }
-
-    private void askCameraPermission() {
-
-        final String[] permissions = new String[]{Manifest.permission.CAMERA};
-
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.CAMERA)) {
-            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_CAMERA_PERM);
-            return;
-        }
-
     }
 }

@@ -89,11 +89,19 @@
             android:textAlignment="center"/>
     </FrameLayout>
 
+    <TextView
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/infoTesto"
+        android:textAlignment="center"/>
+
     <Button
-        android:layout_weight="1.5"
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textColor="@color/white"
+        android:textAlignment="center"
         android:id="@+id/connetti"
         android:text="@string/key_connetti"
         android:background="@drawable/background_buttons_connect"/>

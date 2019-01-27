@@ -12,11 +12,20 @@
     <string name="key_disconnesso">Disconnesso</string>
     <string name="key_connetti">Connetti</string>
     <string name="key_disconnetti">Disconnetti</string>
-    <string name="key_connection_error">Connection error</string>
+    <string name="key_connection_error">Errore di connessione</string>
     <string name="key_error">Errore</string>
     <string name="key_bluetooth_supporto">Bluetooth non supportato</string>
     <string name="key_telefono_supporto">Il tuo telefono non supporta il bluetooth.</string>
     <string name="key_bluetooth_disabilitato">Bluetooth non attivato</string>
     <string name="key_attiva_bluetooth">Bluetooth disabilitato. Attivalo e riprova.</string>
     <string name="key_scegli_dispositivo">Scegli il dispositivo EV3</string>
+    <string name="key_click_procedere">Abilita/disabilita click per procedere sulla stampante</string>
+    <string name="key_connect_and_disconnect">I cambiamenti verranno messi in atto alla prossima riconnessione</string>
+    <string name="key_benvenuto">Benvenuto su CalcuLegor!</string>
+    <string name="key_titolo_terza_slide">...ma abbiamo bisogno di qualche autorizzazione...</string>
+    <string name="key_descrizione_terza_slide">Per una migliore esperienza d\'uso, accetta le richieste che ti verranno proposte.</string>
+    <string name="key_titolo_seconda_slide">Usa la tua stampante CalcuLegor EV3!</string>
+    <string name="key_descrizione_seconda_slide">Impara a risolvere espressioni complesse grazie alla risoluzione passo passo!</string>
+    <string name="key_qualcosa_storto">Qualcosa è andato storto.</string>
+    <string name="key_comunicazione">Comunicazione</string>
 </resources>

@@ -6,9 +6,11 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.ParcelUuid;
+import android.os.Vibrator;
 import android.support.v7.view.menu.ActionMenuItemView;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -52,12 +54,13 @@ public class BluetoothHelper {
         outputStream.flush();
         inputStream = new ObjectInputStream(mSocket.getInputStream());
 
-        // invia packet con le impostazioni!!!!!!
-
         readEvents = new ReadEvents(a);
 
         read = new Thread(readEvents);
         read.start();
+
+        String settings = Salvataggi.getAudio(a) + ";" + Salvataggi.getClickProcedere(a);
+        send(new Packet(Packet.KEY_IMPOSTAZIONI, settings));
     }
 
     public static void send(Packet packet) throws IOException {
@@ -275,13 +278,20 @@ public class BluetoothHelper {
         act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if(Salvataggi.getVibrazione(act)) {
+                    Vibrator v = (Vibrator) act.getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(400);
+                }
+
                 TextView info = act.findViewById(R.id.infoBar);
+                TextView infoTesto = act.findViewById(R.id.infoTesto);
                 ProgressBar pBar = act.findViewById(R.id.progressBar);
 
                 pBar.setProgress(currentPasso);
                 pBar.setMax(finPasso);
 
                 info.setText(currentPasso + "/" + finPasso);
+                infoTesto.setText(text);
 
                 if(currentPasso == finPasso) {
                     Button btn = act.findViewById(R.id.invia);

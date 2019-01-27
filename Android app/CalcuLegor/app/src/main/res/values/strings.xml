@@ -24,4 +24,13 @@
     <string name="key_bluetooth_disabilitato">Bluetooth not enabled</string>
     <string name="key_attiva_bluetooth">Bluetooth is disabled. Enable it and retry.</string>
     <string name="key_scegli_dispositivo">Select an EV3 device</string>
+    <string name="key_click_procedere">Enable/disable click to procede on the printer.</string>
+    <string name="key_connect_and_disconnect">The changes will be applied at the next reconnection</string>
+    <string name="key_benvenuto">Welcome to CalcuLegor!</string>
+    <string name="key_titolo_seconda_slide">"Use your CalcuLegor EV3 printer! "</string>
+    <string name="key_descrizione_seconda_slide">"Learn to solve complex expressions thanks to step by step resolution! "</string>
+    <string name="key_titolo_terza_slide">"...but we need some authorization... "</string>
+    <string name="key_descrizione_terza_slide">For a better user experience, accept the requests that we would propose.</string>
+    <string name="key_qualcosa_storto">Something went wrong.</string>
+    <string name="key_comunicazione">Communicate</string>
 </resources>

@@ -6,21 +6,21 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_calculator"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/calculator"
             android:title="@string/calcolatrice"
             android:checked="true"/>
 
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/settings"
             android:title="@string/action_settings" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/key_comunicazione">
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/share"
                 android:title="@string/condividi" />
         </menu>
     </item>

@@ -133,8 +133,6 @@ public class BTHelper {
         conn = null;
         
         System.exit(0);
-
-        // reset grafico!!!!!!
     }
 	
 	
@@ -169,6 +167,14 @@ public class BTHelper {
 						case Packet.KEY_DISCONNECT:
 							
 							disconnect(false);
+							
+							break;
+							
+						case Packet.KEY_IMPOSTAZIONI:
+							
+							String[] valori = message.split(";");
+							Salvataggi.setAudio(Boolean.parseBoolean(valori[0]));
+							Salvataggi.setClickProcedere(Boolean.parseBoolean(valori[1]));
 							
 							break;
 					}

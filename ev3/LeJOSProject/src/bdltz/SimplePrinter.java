@@ -1,13 +1,9 @@
 package bdltz;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import Lego.Packet;
 import dametto.alex.Exp;
 import dametto.alex.Step;
 import dametto.alex.Steps;
-import dametto.alex.SyntaxException;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
@@ -57,6 +53,8 @@ public class SimplePrinter {
 	
 	private int defaultSpeed = 360; // 720 degress per seconds
 	
+	private boolean printing = false;
+	
 	
 	BTHelper bt;
 	
@@ -66,7 +64,7 @@ public class SimplePrinter {
 		//System.out.println(charForRow + ", " + numberRow);
 	}
 	
-	public void startPrinting() {	
+	public void startPrinting() {		
 		attendiFoglio();
 				
 		Exp e = new Exp(toPrint);
@@ -90,6 +88,8 @@ public class SimplePrinter {
 			if(!a.getDescription().equals(""))
 				totalPassi++;
 		}
+		
+		printing = true;
 		
 		for(Step a : passi.getSteps()) {
 			if(!a.getDescription().equals("")) {
@@ -135,9 +135,13 @@ public class SimplePrinter {
 				}
 				
 				index++;
+				
+				if(Salvataggi.getClickProcedere()) {
+					// WAIT FOR CLICK!!!!!!
+				}
 			}
 		}
-		
+			
 		// spostare la penna in centro....
 		
 		indexInRow = 0;
@@ -150,7 +154,13 @@ public class SimplePrinter {
 			currentZ = degreePerZ;
 		}
 		
+		printing = false;
+		
 		espelliFoglio();
+	}
+	
+	public boolean isPrinting() {
+		return this.printing;
 	}
 	
 	private void espelliFoglio() {		
