@@ -5,7 +5,7 @@ import lejos.hardware.Button;
 public class Main {
 	public static void main(String[] args) {
 	    //System.out.println("Insert the pen.");	
-	    
+		
 	    //Motor.C.rotate(800);
 	    	    
 	    //Button.waitForAnyPress();
@@ -20,8 +20,8 @@ public class Main {
 		
 		//Motor.C.rotate(280);
 				
+		// apre oggetto connessione bt
 		BTHelper bt = new BTHelper();
-	    	    
 	    Button.waitForAnyPress();
 	}
 }

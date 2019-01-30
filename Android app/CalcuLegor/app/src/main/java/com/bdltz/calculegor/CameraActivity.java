@@ -29,6 +29,8 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import java.io.IOException;
 
 public class CameraActivity extends AppCompatActivity {
+
+    // variabili locali per gestire la fotocamera
     private CameraSource mCameraSource;
     private TextRecognizer mTextRecognizer;
     private SurfaceView mSurfaceView;
@@ -39,12 +41,15 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
+        // inizializzazione
         mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
         mTextView = (TextView) findViewById(R.id.textView);
 
+        // controllo, anche se non servirebbe perchè il pulsante è nascosto in caso di non accettazione dei permessi
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             startTextRecognizer();
         } else {
+            // errore
             new AlertDialog.Builder(this)
                     .setTitle(getText(R.string.key_error))
                     .setMessage(getText(R.string.key_qualcosa_storto))
@@ -55,10 +60,11 @@ public class CameraActivity extends AppCompatActivity {
                             finish();
                         }
                     })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(R.drawable.warning)
                     .show();
         }
 
+        // inizializzo
         ImageButton btn = findViewById(R.id.foto);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,13 +81,17 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // rilascio la fotocamera
         mCameraSource.release();
     }
 
+    // inizio il servizio di conversione OCR
     private void startTextRecognizer() {
         mTextRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
 
         if (!mTextRecognizer.isOperational()) {
+            // errore se non funziona
             new AlertDialog.Builder(this)
                     .setTitle(getText(R.string.key_error))
                     .setMessage(getText(R.string.key_qualcosa_storto))
@@ -92,9 +102,10 @@ public class CameraActivity extends AppCompatActivity {
                             finish();
                         }
                     })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(R.drawable.warning)
                     .show();
         } else {
+            // inizio
             mCameraSource = new CameraSource.Builder(getApplicationContext(), mTextRecognizer)
                     .setFacing(CameraSource.CAMERA_FACING_BACK)
                     .setRequestedPreviewSize(1280, 1024)
@@ -105,13 +116,16 @@ public class CameraActivity extends AppCompatActivity {
             mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
                 @Override
                 public void surfaceCreated(SurfaceHolder holder) {
+                    // controllo ancora, anche se non serve...
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                         try {
+                            // inizio fotocamera
                             mCameraSource.start(mSurfaceView.getHolder());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     } else {
+                        // qualcosa è andato storto....
                         new AlertDialog.Builder(CameraActivity.this)
                                 .setTitle(getText(R.string.key_error))
                                 .setMessage(getText(R.string.key_qualcosa_storto))
@@ -122,7 +136,7 @@ public class CameraActivity extends AppCompatActivity {
                                         finish();
                                     }
                                 })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setIcon(R.drawable.warning)
                                 .show();
                     }
                 }
@@ -134,10 +148,11 @@ public class CameraActivity extends AppCompatActivity {
 
                 @Override
                 public void surfaceDestroyed(SurfaceHolder holder) {
-                    mCameraSource.stop();
+                    mCameraSource.stop();// fermo...
                 }
             });
 
+            // processo il testo
             mTextRecognizer.setProcessor(new Detector.Processor<TextBlock>() {
                 @Override
                 public void release() {
@@ -159,6 +174,7 @@ public class CameraActivity extends AppCompatActivity {
                     Handler handler = new Handler(Looper.getMainLooper());
                     handler.post(new Runnable() {
                         public void run() {
+                            // setto il testo
                             mTextView.setText(fullText);
                         }
                     });

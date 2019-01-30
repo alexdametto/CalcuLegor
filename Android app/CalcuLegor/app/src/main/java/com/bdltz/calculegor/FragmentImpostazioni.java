@@ -17,8 +17,8 @@ import android.widget.Toast;
 import com.bdltz.calculegor.Helpers.Salvataggi;
 
 public class FragmentImpostazioni extends Fragment {
+    // variabili locali
     View rootview;
-
     Switch audio, vibrazione, click;
 
     @Nullable
@@ -33,12 +33,15 @@ public class FragmentImpostazioni extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // inizializzo
         audio = rootview.findViewById(R.id.audio);
         vibrazione = rootview.findViewById(R.id.vibrazione);
         click = rootview.findViewById(R.id.clickProcedere);
 
-        loadSettings();
+        loadSettings(); // carico i settaggi
 
+
+        // creo listener quando cambia il settaggio
         audio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -67,6 +70,7 @@ public class FragmentImpostazioni extends Fragment {
         });
     }
 
+    // carico settaggi già salvati
     private void loadSettings() {
         audio.setChecked(Salvataggi.getAudio(getActivity()));
         vibrazione.setChecked(Salvataggi.getVibrazione(getActivity()));

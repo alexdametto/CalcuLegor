@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import static android.content.Context.MODE_PRIVATE;
 
 public class Salvataggi {
+    // salvo booleane in sharedpreferences, metodi di set e get
+
     public static boolean getAudio(Activity a) {
         SharedPreferences prefs = a.getSharedPreferences("SALVATAGGI", MODE_PRIVATE);
         boolean value = prefs.getBoolean("audio", false);

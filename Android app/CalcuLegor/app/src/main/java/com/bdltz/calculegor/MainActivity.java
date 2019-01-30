@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
 
+        // carico fragment iniziale
         try {
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.container, new FragmentCalcolatrice()).commit();
@@ -64,10 +65,12 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+        // cambio colore barra di navigazione
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
+        // lancio slide
         launchSlide();
     }
 
@@ -81,42 +84,31 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // lancio le slide su un thread differente solo se è la prima volta che apro l'app
     public void launchSlide() {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                //  Initialize SharedPreferences
                 SharedPreferences getPrefs = PreferenceManager
                         .getDefaultSharedPreferences(getBaseContext());
 
-                //  Create a new boolean and preference and set it to true
                 boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
 
-                //  If the activity has never started before...
                 if (isFirstStart) {
 
-                    //  Launch app intro
                     final Intent i = new Intent(MainActivity.this, ActivityIntro.class);
-
                     runOnUiThread(new Runnable() {
                         @Override public void run() {
                             startActivity(i);
                         }
                     });
-
-                    //  Make a new preferences editor
                     SharedPreferences.Editor e = getPrefs.edit();
-
-                    //  Edit preference to make it false because we don't want this to run again
                     e.putBoolean("firstStart", false);
-
-                    //  Apply changes
                     e.apply();
                 }
             }
         });
 
-        // Start the thread
         t.start();
     }
 
@@ -128,14 +120,21 @@ public class MainActivity extends AppCompatActivity
 
         Fragment fragment = null;
 
+        // cambio fragment
         if (id == R.id.nav_calculator) {
             fragment = new FragmentCalcolatrice();
         } else if (id == R.id.nav_settings) {
             fragment = new FragmentImpostazioni();
         } else if (id == R.id.nav_share) {
-            System.out.println("Share non implementato");
+            // implementazione condividi
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.linkCondividi));
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
         }
 
+        // carico nuovo fragment
         try {
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();

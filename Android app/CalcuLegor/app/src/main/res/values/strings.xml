@@ -33,4 +33,6 @@
     <string name="key_descrizione_terza_slide">For a better user experience, accept the requests that we would propose.</string>
     <string name="key_qualcosa_storto">Something went wrong.</string>
     <string name="key_comunicazione">Communicate</string>
+    <string name="key_device_non_presente">If the EV3 is not present, open the bluetooth settings and perform the pairing.</string>
+    <string name="linkCondividi">Try CalcuLegor for Lego EV3 MindStorm! Is fantastic! Google Play:</string>
 </resources>

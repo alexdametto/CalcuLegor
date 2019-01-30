@@ -27,18 +27,20 @@ import java.util.ArrayList;
 import Lego.Packet;
 
 public class BluetoothHelper {
-
+    // variabili di connessione, stream
     private static BluetoothAdapter BTAdapter;
     private static BluetoothSocket mSocket;
     private static ObjectOutputStream outputStream;
     private static ObjectInputStream inputStream;
 
+    // thread vari
     private static ReadEvents readEvents;
-
     private static Thread read;
 
+    // booleana di connesso o no
     private static boolean connesso = false;
 
+    // si connette a device
     public static void connect(BluetoothDevice device, Activity a) throws IOException {
         if(device == null)
             return;
@@ -46,23 +48,28 @@ public class BluetoothHelper {
         ParcelUuid[] uuids = device.getUuids();
         mSocket =  device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
 
+        // apre il socket
         mSocket.connect();
 
+        // si è connesso
         connesso = true;
 
+        // apro gli stream
         outputStream = new ObjectOutputStream(mSocket.getOutputStream());
         outputStream.flush();
         inputStream = new ObjectInputStream(mSocket.getInputStream());
 
+        // apri thread vari
         readEvents = new ReadEvents(a);
-
         read = new Thread(readEvents);
         read.start();
 
+        // invio le impostazioni
         String settings = Salvataggi.getAudio(a) + ";" + Salvataggi.getClickProcedere(a);
         send(new Packet(Packet.KEY_IMPOSTAZIONI, settings));
     }
 
+    // metodo per inviare un pacchetto
     public static void send(Packet packet) throws IOException {
         if(connesso) {
             outputStream.writeObject(packet);
@@ -70,6 +77,7 @@ public class BluetoothHelper {
         }
     }
 
+    // thread che attende pacchetti da ev3
     private static class ReadEvents implements Runnable {
         private Activity a;
         private boolean run = true;
@@ -93,7 +101,7 @@ public class BluetoothHelper {
 
                     int key = p.getKey();
                     String message = p.getMessage();
-
+                    // in base al pacchetto faccio qualcosa...
                     switch(key) {
                         case Packet.KEY_BATTERY:
                             double value = Double.valueOf(message);
@@ -129,10 +137,12 @@ public class BluetoothHelper {
         }
     }
 
+    // booleana che ritorna se è connesso o no
     public static boolean isConnected() {
         return connesso;
     }
 
+    // controllo se bluetooth è supportato e se è attivo
     private static boolean checkBluetooth(final Activity a) {
         BluetoothHelper.BTAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -146,7 +156,7 @@ public class BluetoothHelper {
                             dialog.dismiss();
                         }
                     })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(R.drawable.warning)
                     .show();
             return false;
         } else if (!BluetoothHelper.BTAdapter.isEnabled()) {
@@ -158,7 +168,7 @@ public class BluetoothHelper {
                             dialog.dismiss();
                         }
                     })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(R.drawable.warning)
                     .show();
 
             return false;
@@ -166,12 +176,14 @@ public class BluetoothHelper {
         return true;
     }
 
-    // invocarlo quando si chiude app
+    // disconnessione
     public static void disconnect(boolean mandaPack) throws IOException {
-        // send messaggio chiusura!!!
 
+        // gli dico di disconnettersi
         if(mandaPack)
             send(new Packet(Packet.KEY_DISCONNECT, "Close"));
+
+        // chiudo thread e stream vari
         if(read != null) {
             read.interrupt();
         }
@@ -208,12 +220,11 @@ public class BluetoothHelper {
 
         mSocket = null;
 
+        // non sono più connesso
         connesso = false;
-
-
-        // reset grafico!!!!!!
     }
 
+    // prendo i dispositivi associati
     public static ArrayList<BluetoothDevice> getBondedDevices() {
         ArrayList<BluetoothDevice> devices = new ArrayList<>();
 
@@ -225,6 +236,7 @@ public class BluetoothHelper {
         return devices;
     }
 
+    // carico i dispositivi su un dialog, quando si chiude se posso mi connetto
     private static void loadDisp(final Activity act) {
         final DialogListAdapter cdd = new DialogListAdapter(act);
         cdd.show();
@@ -250,14 +262,15 @@ public class BluetoothHelper {
         });
     }
 
+    // se è tutto ok apro i dispositivi
     public static void scegliDispositivo(final Activity act) {
-        // controllare se bluetooth è attivo oppure no !!!!
         boolean ok = checkBluetooth(act);
 
         if(ok)
             loadDisp(act);
     }
 
+    // aggiorno testo batteria
     private static void changeBatteryIcon(final Activity act, final double value) {
         act.runOnUiThread(new Runnable() {
             @SuppressLint("RestrictedApi")
@@ -273,11 +286,12 @@ public class BluetoothHelper {
         });
     }
 
-
+    // aggiorno informazioni su exp inviata
     private static void changeInfoBar(final Activity act, final int currentPasso, final int finPasso, final String text) {
         act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                // se posso, vibro
                 if(Salvataggi.getVibrazione(act)) {
                     Vibrator v = (Vibrator) act.getSystemService(Context.VIBRATOR_SERVICE);
                     v.vibrate(400);
@@ -301,6 +315,7 @@ public class BluetoothHelper {
         });
     }
 
+    // messaggio di errore generico
     private static void error(final Activity act, final String text) {
         act.runOnUiThread(new Runnable() {
             @Override
@@ -313,7 +328,7 @@ public class BluetoothHelper {
                                 dialog.dismiss();
                             }
                         })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setIcon(R.drawable.warning)
                         .show();
             }
         });

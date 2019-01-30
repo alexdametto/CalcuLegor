@@ -1,7 +1,10 @@
 package bdltz;
 
 public class Salvataggi {
+	// variabili locali
 	private static boolean audio = false, click = false;
+	
+	// getter e setter delle variabili
 	
     public static boolean getAudio() {
         return audio;

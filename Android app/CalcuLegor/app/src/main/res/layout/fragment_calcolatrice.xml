@@ -94,7 +94,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/infoTesto"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:textAllCaps="true"/>
 
     <Button
         android:layout_weight="1"

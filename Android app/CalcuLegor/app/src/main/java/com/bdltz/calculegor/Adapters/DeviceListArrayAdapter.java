@@ -18,6 +18,7 @@ import com.bdltz.calculegor.R;
 import java.util.List;
 
 public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
+    // variabili locali...
     private final List<BluetoothDevice> list;
     private final Activity context;
     private final DialogListAdapter adapter;
@@ -27,6 +28,7 @@ public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
         protected TextView testo;
     }
 
+    // costruttore
     public DeviceListArrayAdapter(Activity context, List<BluetoothDevice> list, DialogListAdapter adapter) {
         super(context, R.layout.bt_device_row, list);
         this.context = context;
@@ -34,6 +36,7 @@ public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
         this.adapter = adapter;
     }
 
+    // creo la view della singola riga e la ritorno
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = null;
@@ -62,10 +65,12 @@ public class DeviceListArrayAdapter extends ArrayAdapter<BluetoothDevice> {
         return view;
     }
 
+    // quando clicco su una riga mi ricordo che device è
     public void openConnection(BluetoothDevice bt) {
         this.selected = bt;
     }
 
+    // ritorno il device selezionato
     public BluetoothDevice getSelected() {
         return this.selected;
     }

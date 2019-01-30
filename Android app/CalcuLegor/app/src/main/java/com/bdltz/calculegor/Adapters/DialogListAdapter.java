@@ -32,7 +32,7 @@ public class DialogListAdapter extends Dialog {
     public DialogListAdapter(Activity a) {
         super(a);
         // TODO Auto-generated constructor stub
-        this.c = a;
+        this.c = a;// inizializzazione
         this.adapter = new DeviceListArrayAdapter(c, BluetoothHelper.getBondedDevices(), this);
     }
 
@@ -42,11 +42,13 @@ public class DialogListAdapter extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.list_dialog);
 
+        // setto adapter
         ListView l = findViewById(R.id.lista);
         l.setAdapter(this.adapter);
     }
 
 
+    // ritorno il device selezionato
     public BluetoothDevice getSelected() {
         return adapter.getSelected();
     }

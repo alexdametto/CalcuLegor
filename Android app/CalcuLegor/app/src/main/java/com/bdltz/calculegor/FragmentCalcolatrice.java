@@ -34,6 +34,7 @@ import Lego.Packet;
 import static android.app.Activity.RESULT_OK;
 
 public class FragmentCalcolatrice extends Fragment {
+    // variabili locali
     View rootview;
 
     ImageButton voce, camera;
@@ -42,8 +43,10 @@ public class FragmentCalcolatrice extends Fragment {
     Button invia, btnConn;
     ActionMenuItemView battery;
 
+    // thread che monitora il socket
     SocketMonitor sm;
 
+    // codici per i permessi
     private final static int REQ_CODE_SPEECH_INPUT = 1;
     private final static int REQ_CODE_FOTO = 2;
 
@@ -66,14 +69,13 @@ public class FragmentCalcolatrice extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // inizializzo
         voce = rootview.findViewById(R.id.mic);
         camera = rootview.findViewById(R.id.camera);
         espressione = rootview.findViewById(R.id.espressione);
         invia = rootview.findViewById(R.id.invia);
         connected = rootview.findViewById(R.id.conn);
         btnConn = rootview.findViewById(R.id.connetti);
-        battery = rootview.findViewById(R.id.battery);
-
 
         voce.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,20 +107,24 @@ public class FragmentCalcolatrice extends Fragment {
             }
         });
 
-        sm = new SocketMonitor(connected, btnConn, invia, battery, getActivity());
+        // creo thread
+        sm = new SocketMonitor(connected, btnConn, invia, getActivity());
 
         Thread t2 = new Thread(sm);
         t2.start();
 
+        // controllo i permessi se sono garantiti per nascondere il pulsante fotocamera
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             camera.setVisibility(View.INVISIBLE);
         }
     }
 
+    // mi connetto
     public void connect() {
         BluetoothHelper.scegliDispositivo(getActivity());
     }
 
+    // mi disconnetto
     public void disconnect() {
         try {
             BluetoothHelper.disconnect(true);
@@ -127,6 +133,7 @@ public class FragmentCalcolatrice extends Fragment {
         }
     }
 
+    // avvio riconoscimento voce
     private void riconosciVoce(){
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -139,13 +146,14 @@ public class FragmentCalcolatrice extends Fragment {
         }
     }
 
+    // avvio riconoscimento foto
     private void riconosciFoto(){
         Intent myIntent = new Intent(rootview.getContext(), CameraActivity.class);
         startActivityForResult(myIntent, REQ_CODE_FOTO);
     }
 
 
-
+    // una volta chiusa un activity, guardo quale è in base al codice e faccio quello che devo fare
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -167,20 +175,25 @@ public class FragmentCalcolatrice extends Fragment {
         }
     }
 
-    // RIVEDERE QUESTO METODO
+    // quando ottengo un input da voce, converto il testo
     private String convertiTesto(String dettato){
         System.out.println(dettato);
 
+        dettato = dettato.replace("somma", "+");
         dettato = dettato.replace("più", "+");
         dettato = dettato.replace("piu", "+");
         dettato = dettato.replace("meno", "-");
+        dettato = dettato.replace("sottrazione", "-");
         dettato = dettato.replace("per", "*");
+        dettato = dettato.replace("moltiplicazione", "*");
         dettato = dettato.replace("diviso", "/");
+        dettato = dettato.replace("divisione", "/");
         dettato = dettato.replace("fratto", "/");
 
         return dettato;
     }
 
+    // quando clicca su invia
     public void clickPulsante() {
         Button btn = rootview.findViewById(R.id.invia);
         btn.setEnabled(false);
@@ -193,7 +206,7 @@ public class FragmentCalcolatrice extends Fragment {
         }
     }
 
-
+    // thread che monitora il socket per vedere se è connesso o no
     private static class SocketMonitor implements Runnable {
         private TextView text;
         private Button btn, btnInvia;
@@ -201,12 +214,11 @@ public class FragmentCalcolatrice extends Fragment {
         private Activity a;
         private ActionMenuItemView battery;
 
-        public SocketMonitor(TextView text, Button btn, Button btnInvia, ActionMenuItemView battery, Activity a) {
+        public SocketMonitor(TextView text, Button btn, Button btnInvia, Activity a) {
             this.text = text;
             this.a = a;
             this.btn = btn;
             this.btnInvia = btnInvia;
-            this.battery = battery;
         }
 
         public void terminate() {
@@ -219,17 +231,22 @@ public class FragmentCalcolatrice extends Fragment {
                 while(exe) {
                     final boolean conn = BluetoothHelper.isConnected();
 
-                    battery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(conn) {
-                                battery.setVisibility(View.VISIBLE);
+                    // aggiorno grafica
+
+                    battery = a.findViewById(R.id.battery);
+
+                    if(battery != null) {
+                        battery.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (conn) {
+                                    battery.setVisibility(View.VISIBLE);
+                                } else {
+                                    battery.setVisibility(View.INVISIBLE);
+                                }
                             }
-                            else {
-                                battery.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    });
+                        });
+                    }
 
                     text.post(new Runnable() {
                         @Override

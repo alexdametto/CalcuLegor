@@ -16,6 +16,8 @@ public class ActivityIntro extends AppIntro {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // activity intro, per il tutorial...
+
         getSupportActionBar().hide();
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorPrimaryDark));
@@ -25,10 +27,12 @@ public class ActivityIntro extends AppIntro {
         TextView txtSkip = findViewById(R.id.skip);
         txtSkip.setTextColor(getResources().getColor(R.color.colorAccent));
 
+        // creo le slide
         addSlide(AppIntroFragment.newInstance(getString(R.string.key_benvenuto), "sans-serif", "", "sans-serif", R.drawable.icona, getResources().getColor(R.color.white), getResources().getColor(R.color.colorPrimary), getResources().getColor(R.color.white)));
         addSlide(AppIntroFragment.newInstance(getString(R.string.key_titolo_seconda_slide), "sans-serif", getString(R.string.key_descrizione_seconda_slide), "sans-serif", R.drawable.calculation, getResources().getColor(R.color.white), getResources().getColor(R.color.colorPrimary), getResources().getColor(R.color.colorPrimary)));
         addSlide(AppIntroFragment.newInstance(getString(R.string.key_titolo_terza_slide), "sans-serif", getString(R.string.key_descrizione_terza_slide), "sans-serif", R.drawable.key, getResources().getColor(R.color.white), getResources().getColor(R.color.colorPrimary), getResources().getColor(R.color.colorPrimary)));
 
+        // chiedo i permessi alla slide n.3
         askForPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 3);
 
         setIndicatorColor(getResources().getColor(R.color.colorAccent), R.color.colorPrimary);
@@ -50,13 +54,12 @@ public class ActivityIntro extends AppIntro {
     @Override
     public void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
-        // Do something when users tap on Done button.
         finish();
+        // chiudo l'activity
     }
 
     @Override
     public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
         super.onSlideChanged(oldFragment, newFragment);
-        // Do something when the slide changes.
     }
 }

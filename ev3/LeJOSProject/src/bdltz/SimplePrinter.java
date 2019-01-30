@@ -4,25 +4,20 @@ import Lego.Packet;
 import dametto.alex.Exp;
 import dametto.alex.Step;
 import dametto.alex.Steps;
+import lejos.hardware.Sound;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 
-public class SimplePrinter {
-	// RIVEDERE TUTTE QUESTE VARIABILI!!!!!!!
-	
+public class SimplePrinter {	
 	private String toPrint;
 	
-	// FOGLI DA 14 cm di larghezza, lunghi come un A4 (quindi 14 cm x 29.7 cm)
-	//private static final double PAPER_CM_X = 14; // da rivedere, probabilmente 15 cm
-	//private static final double PAPER_CM_Y = 29.7;
-	
 	// da rivedere
-	private static final double PAPER_MAX_X = 6.25; // sono circa 6.5 cm...
+	private static final double PAPER_MAX_X = 6.25;
 	private static final double PAPER_MAX_Y = 20; 
 	
-	// a letter is LETTER_MAX_X * LETTER_MAX_Y rectangle.
 	private static final double LETTER_MAX_X = 0.5; 
 	private static final double LETTER_MAX_Y = 1;
 	private static final double DELAY_X = 0.25;
@@ -31,42 +26,49 @@ public class SimplePrinter {
 	private static final double PAPER_SENS = 0.04; 
 		
 	final private int charForRow = (int) Math.floor(( PAPER_MAX_X - 2 * DELAY_X ) / (LETTER_MAX_X + DELAY_X));
-	//private int indexInRow = charForRow/2;
 	private int indexInRow = 0;
 	
 	final private int numberRow = (int) Math.floor(( PAPER_MAX_Y - 2 * DELAY_Y ) / (LETTER_MAX_Y + DELAY_Y)) ;
 	private int indexRow = 0;
 	
-	// le velocitaÂ  son diverse, controllare con test, necessitano di una rotazione di degreePerX per fare 1 cm di movimento nell'asse X
-	final private double degreePerX = 111.111111;
+	// necessitano di una rotazione di degreePerN per fare 1 cm di movimento nell'asse N
+	final private double degreePerX = 111.111111; 
 	final private double degreePerY = 90.909090;
+	
+	// angolo per alzare la penna
 	final private int degreePerZ = 280;
 	
-	// inside the letter....
+	// posizione dentro la lettera
 	private double currentX = 0;
 	private double currentY = 0;
-	private int currentZ = degreePerZ; // da cambiare con il grado
+	
+	// current angolo Z
+	private int currentZ = degreePerZ;
 
-		
+	// sensori
 	private static final EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S1);
+	private static final EV3TouchSensor touch = new EV3TouchSensor(SensorPort.S2);
 	private final SampleProvider sp = us.getDistanceMode();
 	
-	private int defaultSpeed = 360; // 720 degress per seconds
+	private int defaultSpeed = 360; // 360 degress per seconds
 	
+	// booleana che indica se sto stampando o meno
 	private boolean printing = false;
 	
-	
+	// connessione bluetooth
 	BTHelper bt;
 	
 	SimplePrinter(String toPrint, BTHelper bt) {
 		this.bt = bt;
 		this.toPrint = toPrint;
-		//System.out.println(charForRow + ", " + numberRow);
 	}
 	
-	public void startPrinting() {		
+	// metodo di iniziare a stampare
+	public void startPrinting() {
+		// aspetto il foglio
 		attendiFoglio();
 				
+		// valuto l'espressione e se ci sono errori lo ritorno
 		Exp e = new Exp(toPrint);
 		Steps passi = null;
 		
@@ -77,13 +79,16 @@ public class SimplePrinter {
 			Packet p = new Packet(Packet.KEY_ERROR, e1.getMessage());
 			try {
 				bt.send(p);
-			} catch (Exception e2) {}
+			} catch (Exception e2) {
+				
+			}
 		}
 		
 		int index = 0;
 		
 		int totalPassi = 0;
 		
+		// conto i passi di calcoli
 		for(Step a : passi.getSteps()) {
 			if(!a.getDescription().equals(""))
 				totalPassi++;
@@ -91,26 +96,33 @@ public class SimplePrinter {
 		
 		printing = true;
 		
+		int nPasso = 0;
+		// scorro tutti i passi
 		for(Step a : passi.getSteps()) {
+			// se è un passo di calcolo
 			if(!a.getDescription().equals("")) {
 				String passo = a.getExp().toLowerCase();
 				String description = a.getDescription().toLowerCase();
+				
+				// se non sono all'ultimo passo aggiungi il simbolo "="
+				if(nPasso != totalPassi)
+					passo += "=";
 							
-				Packet pack = new Packet(Packet.KEY_INFO_EXP, (index+1) + ";" + totalPassi +  ";" + description);
-				// send pack
+				// inzia informazione su cosa sta facendo
+				Packet pack = new Packet(Packet.KEY_INFO_EXP, (nPasso+1) + ";" + totalPassi +  ";" + description);
 				try {
 					bt.send(pack);
 				} catch (Exception e1) {}
 
-				
+				// per ogni carattere, stampalo
 				for(int i = 0; i < passo.length(); ++i) {
 					moveInsideLetter(0, 0);
 					char c = passo.charAt(i);
 					
 					printChar(c);
-									
+							
+					// aggiorna valori e controlla se ho spazio nel foglio
 					indexInRow++;
-					// change to next with checkes...
 					if(indexInRow > charForRow) {
 						// finita la riga
 						// andare a capo
@@ -119,12 +131,14 @@ public class SimplePrinter {
 						indexInRow = 0;
 					}
 					if(indexRow > numberRow) {
+						// finito il foglio
 						cambiaFoglio();
 						indexRow = 0;
 						indexInRow = 0;
 					}
 				}
 				
+				// ho finito di stampare il passo, vado a capo e faccio controlli
 				indexInRow = 0;
 				indexRow++;
 				
@@ -136,19 +150,31 @@ public class SimplePrinter {
 				
 				index++;
 				
-				if(Salvataggi.getClickProcedere()) {
-					// WAIT FOR CLICK!!!!!!
+				moveInsideLetter(0, 0);
+				
+				// suona se hai il permesso di suonare
+				if(Salvataggi.getAudio()) {
+					Sound.twoBeeps();
 				}
+				
+				// aspetta il click se l'utente lo desidera, tranne per l'ultimo passo perchè hai finito
+				if(Salvataggi.getClickProcedere() && nPasso != totalPassi) {
+					float value;
+					do {
+						int sampleSize = touch.sampleSize();
+						float[] sample = new float[sampleSize];
+						touch.fetchSample(sample, 0);
+						value = sample[0];
+					} while(value != 1);
+				}
+				nPasso++;
 			}
 		}
 			
-		// spostare la penna in centro....
-		
+		// alza la penna e cambia foglio che hai finito
 		indexInRow = 0;
 		moveInsideLetter(0, 0);
-		
-		// DA TESTARE!!
-		
+				
 		if(currentZ != degreePerZ) {
 			Motor.C.rotate((int)(degreePerZ-currentZ)); // prima bisogna spostare l'asse X
 			currentZ = degreePerZ;
@@ -159,12 +185,13 @@ public class SimplePrinter {
 		espelliFoglio();
 	}
 	
+	// ritorna se sta stampando o no
 	public boolean isPrinting() {
 		return this.printing;
 	}
 	
+	// espelle il foglio
 	private void espelliFoglio() {		
-		
 		float distanceValue;
 		Motor.B.setSpeed(defaultSpeed);
 		Motor.B.forward();
@@ -174,11 +201,12 @@ public class SimplePrinter {
             distanceValue = sample[0];
         } while(distanceValue < PAPER_SENS || Float.isInfinite(distanceValue));
         
-        // continuare per un tot di secondi.....
-        
         Motor.B.stop();
+        
+        Motor.B.rotate((int)(degreePerY * 15));
 	}
 	
+	// attendi un foglio
 	private void attendiFoglio() {		
 		float distanceValue;
 		Motor.B.setSpeed(defaultSpeed);
@@ -190,11 +218,10 @@ public class SimplePrinter {
             
         } while(distanceValue > PAPER_SENS && !Float.isInfinite(distanceValue));
         
-        // continuare per un tot di secondi
-        
         Motor.B.stop();
 	}
-	
+
+	// espelli e attenti un foglio
 	private void cambiaFoglio() {
 		if(currentZ != degreePerZ) {
 			Motor.C.rotate((int)(degreePerZ-currentZ)); // prima bisogna spostare l'asse X
@@ -205,6 +232,7 @@ public class SimplePrinter {
 		attendiFoglio();
 	}
 	
+	// stampa carattere
 	private void printChar(char c) {
 		switch(c) {
 			case 'a' :
@@ -364,20 +392,22 @@ public class SimplePrinter {
 		}
 	}
 	
+	// ritorna la posizione globale della X nel foglio, avendo la posizione nella lettera
 	private double getGlobalX(double x) {		
 		return x + (double)(indexInRow) * (LETTER_MAX_X + DELAY_X);
 	}
 	
+	// ritorna la posizione globale della Y nel foglio, avendo la posizione nella lettera
 	private double getGlobalY(double y) {
 		return y + (double)(indexRow) * (LETTER_MAX_Y + DELAY_Y);
 	}
 
-	
+	// effettua un movimento da dove sta ora fino a dest
 	private void simpleMove(final double destX, final double destY) {		
 		final double dx = Math.abs(currentX - getGlobalX(destX));
 		final double dy = Math.abs(currentY - getGlobalY(destY));
 				
-		// We don't need a movement.
+		// Non abbiamo bisogno di movimento
 		if(dx == 0 && dy == 0)
 			return;
 		
@@ -385,25 +415,25 @@ public class SimplePrinter {
 		int speedDy = defaultSpeed;
 		
 		if(dx > dy && dy != 0) {			
-			// dy ha meno spazio da fare, dx deve velocizzarsi per fare piÃƒÂ¹ spazio in meno tempo.
+			// dy ha meno spazio da fare, dx deve velocizzarsi per fare più spazio in meno tempo.
 			// vel = spazio / tempo 	=> tempo = spazio / vel
 			
 			// tempoDx = tempoDy 		=> spazioDx / velDx = spazioDy / velDy
 			speedDx = (int) Math.round(speedDy / dy * dx);
 		}
 		else if(dx < dy && dx != 0) {
-			// dx ha meno spazio da fare, dy deve velocizzarsi per fare piÃƒÂ¹ spazio in meno tempo.
+			// dx ha meno spazio da fare, dy deve velocizzarsi per fare più spazio in meno tempo.
 			// vel = spazio / tempo 	=> tempo = spazio / vel
 			
 			// tempoDx = tempoDy 		=> spazioDx / velDx = spazioDy / velDy
 			speedDy = (int) Math.round(speedDx / dx * dy);
 		}
 		
+		// Setto le velocità
 		Motor.A.setSpeed(speedDx);
 		Motor.B.setSpeed(speedDy);
 
-		// parallel move both motors
-		
+		// Muovo entrambi i motori
 		Thread t1 = new Thread(new Runnable() {
 		     @Override
 		     public void run() {
@@ -424,22 +454,23 @@ public class SimplePrinter {
 		t2.start();
 		
 		try {
+			// Attendo....
+
 			t1.join();
 			t2.join();	
 			
+			// aggiorno i valori
 			currentX = getGlobalX(destX);
 			currentY = getGlobalY(destY);
-			
-			// wait both thread before going out.
 		}catch(Exception e) {
 			System.out.println("Error executing parallel motors move. Contact the productor.");
 		}
 	}
 	
 	
-	// move from a point to a point at the same time and with the same duration
+	// Mi muovo dentro la lettera
 	private void moveInsideLetter(double destX, double destY) {
-		// if the pen is down, take it up
+		// alzo la penna
 		if(currentZ == 0) {
 			Motor.C.rotate(degreePerZ);
 			currentZ = degreePerZ;
@@ -448,8 +479,9 @@ public class SimplePrinter {
 		simpleMove(destX, destY);
 	}
 	
+	// Effettuo una linea
 	private void lineInsideLetter(double destX, double destY) {
-		// if the pen is up, just take it down.
+		// abbasso la penna
 		if(currentZ != 0) {
 			Motor.C.rotate((int)-currentZ);
 			currentZ = 0;
@@ -666,7 +698,6 @@ public class SimplePrinter {
 		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y);
 		lineInsideLetter(LETTER_MAX_X, 0);
 		lineInsideLetter(0, 0);
-		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y);
 	}
 	
 	private void print1() {
@@ -729,6 +760,7 @@ public class SimplePrinter {
 		lineInsideLetter(LETTER_MAX_X, 0);
 		lineInsideLetter(0, 0);
 		moveInsideLetter(0, LETTER_MAX_Y * 0.5);
+		lineInsideLetter(LETTER_MAX_X, LETTER_MAX_Y * 0.5);
 	}
 	
 	private void print9() {
