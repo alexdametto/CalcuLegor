@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity
             // implementazione condividi
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.linkCondividi));
+            sendIntent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.linkCondividi) + " https://play.google.com/store/apps/details?id=com.bdltz.calculegor");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
         }

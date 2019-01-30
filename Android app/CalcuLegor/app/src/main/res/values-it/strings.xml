@@ -29,5 +29,5 @@
     <string name="key_qualcosa_storto">Qualcosa è andato storto.</string>
     <string name="key_comunicazione">Comunicazione</string>
     <string name="key_device_non_presente">Se l\'EV3 non è presente, apri le impostazioni del bluetooth ed effettua l\'accoppiamento</string>
-    <string name="linkCondividi">"Prova CalcuLegor per Lego EV3 MindStorm! E' fantastica! Google Play: "</string>
+    <string name="linkCondividi">Prova CalcuLegor per Lego EV3 MindStorm! E\' fantastica! Google Play:</string>
 </resources>
