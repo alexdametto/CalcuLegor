@@ -8,8 +8,12 @@ CalcuLegor si propone come un sistema educativo in grado di risolvere espression
 ### Lego MindStorm EV3
 
 Per l'utilizzo del nostro sistema è necessaria l'installazione di LeJOS. Le istruzioni riguardo all'installazione si possono trovare sul [sito ufficiale](http://www.lejos.org/).
-Successivamente caricare il progetto "ev3". Tenere presente che il progetto deve includere la libreria "AnyMathLibrary.jar".
+leJOS è un firmware sostitutivo che include una Java Virtual Machine (JVM) per l'esercuzione di programmi java. Tramite questi programmi è possibile comandare i motori ed i sensori del robot.
+Abbiamo scelto questo firmware in quanto è molto semplice da utilizzare, permette di interfacciarsi facilmente con il bluetooth e perchè per il nostro progetto utilizziamo una libreria java per la risoluzione passo passo delle espressioni matematiche, "AnyMathLibrary".
+La libreria è consultabile e gratuitamente scaricabile a questo [link](https://github.com/DaMeX97/AnyMathLibrary).
 
-### Android (Versione 6.0+)
+Il sorgente da noi proposto per il dispositivo EV3 si trova sotto la directory "ev3". Per l'esecuzione del sorgente controllare che sia inclusa la libreria "AnymathLibrary.jar".
 
-L'applicazione è scaricabile gratuitamente dal Google Play Store a questo [link](https://play.google.com/store/apps/details?id=com.bdltz.calculegor&hl=it).
+### Applicazione Android (Versione 6.0+)
+
+L'applicazione android è scaricabile gratuitamente dal Google Play Store a questo [link](https://play.google.com/store/apps/details?id=com.bdltz.calculegor&hl=it). I dispositivi supportati sono quelli con versione di Android Marshmallow (6.0) o suvvessivi.
