@@ -7,7 +7,7 @@ CalcuLegor si propone come un sistema educativo in grado di risolvere espression
 ## Installazione
 ### Lego MindStorm EV3
 
-Per l'utilizzo del nostro sistema è necessaria l'installazione di leJos. Le istruzioni riguardo all'installazione si possono trovare sul [sito ufficiale](http://www.lejos.org/).
+Per l'utilizzo del nostro sistema è necessaria l'installazione di LeJOS. Le istruzioni riguardo all'installazione si possono trovare sul [sito ufficiale](http://www.lejos.org/).
 Successivamente caricare il progetto "ev3". Tenere presente che il progetto deve includere la libreria "AnyMathLibrary.jar".
 
 ### Android (Versione 6.0+)
