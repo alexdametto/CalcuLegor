@@ -36,7 +36,7 @@ public class SimplePrinter {
 	final private double degreePerY = 90.909090;
 	
 	// angolo per alzare la penna
-	final private int degreePerZ = 280;
+	final private int degreePerZ = 400;
 	
 	// posizione dentro la lettera
 	private double currentX = 0;
@@ -101,15 +101,17 @@ public class SimplePrinter {
 		for(Step a : passi.getSteps()) {
 			// se è un passo di calcolo
 			if(!a.getDescription().equals("")) {
-				String passo = a.getExp().toLowerCase();
+				String passo = a.getExp().toLowerCase().replace(" ", "");
 				String description = a.getDescription().toLowerCase();
+				
+				nPasso++;
 				
 				// se non sono all'ultimo passo aggiungi il simbolo "="
 				if(nPasso != totalPassi)
 					passo += "=";
 							
 				// inzia informazione su cosa sta facendo
-				Packet pack = new Packet(Packet.KEY_INFO_EXP, (nPasso+1) + ";" + totalPassi +  ";" + description);
+				Packet pack = new Packet(Packet.KEY_INFO_EXP, (nPasso) + ";" + totalPassi +  ";" + description);
 				try {
 					bt.send(pack);
 				} catch (Exception e1) {}
@@ -167,7 +169,6 @@ public class SimplePrinter {
 						value = sample[0];
 					} while(value != 1);
 				}
-				nPasso++;
 			}
 		}
 			

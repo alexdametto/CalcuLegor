@@ -1,6 +1,7 @@
 package bdltz;
 
 import lejos.hardware.Button;
+import lejos.hardware.motor.Motor;
 
 public class Main {
 	public static void main(String[] args) {
@@ -21,6 +22,9 @@ public class Main {
 		//Motor.C.rotate(280);
 				
 		// apre oggetto connessione bt
+		
+		//Motor.C.rotate(400);
+		
 		BTHelper bt = new BTHelper();
 	    Button.waitForAnyPress();
 	}
