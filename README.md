@@ -1,4 +1,12 @@
 # CalcuLegor
+CalcuLegor è un progetto di Ingegneria del Software [CT0090] svolto da:
+- Bottolo Beatrice 864676
+- Dametto Alex 864094
+- Lucenti Alessio 864459
+- Tomaiuolo Stefano 864784
+- Zilio Silvia 864988
+
+Consiste in un applicazione Android che comunica con un robot Lego Mindstorm EV3 via Bluetooth.
 
 ## Introduzione
 
