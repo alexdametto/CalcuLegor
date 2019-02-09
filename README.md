@@ -1,5 +1,5 @@
 # CalcuLegor
-CalcuLegor è un progetto di Ingegneria del Software [CT0090] svolto da:
+CalcuLegor è un progetto di Ingegneria del Software [CT0090], Ca' Foscari, svolto da:
 - Bottolo Beatrice 864676
 - Dametto Alex 864094
 - Lucenti Alessio 864459
