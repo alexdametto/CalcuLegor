@@ -8,6 +8,10 @@ CalcuLegor è un progetto di Ingegneria del Software [CT0090], Ca' Foscari, svol
 
 Consiste in un applicazione Android che comunica con un robot Lego Mindstorm EV3 via Bluetooth.
 
+Video demo di una delle prime versioni dell'applicazione:
+
+[![DEMO](./attachments/thumb-video.png)](./attachments/VID-20190220-WA0035.mp4)
+
 ## Introduzione
 
 CalcuLegor si propone come un sistema educativo in grado di risolvere espressioni e, utilizzando un Lego EV3 MindStorm, stamperà la risoluzione passo passo.
@@ -25,3 +29,11 @@ Il sorgente da noi proposto per il dispositivo EV3 si trova sotto la directory "
 ### Applicazione Android (Versione 6.0+)
 
 L'applicazione android è scaricabile gratuitamente dal Google Play Store a questo [link](https://play.google.com/store/apps/details?id=com.bdltz.calculegor&hl=it). I dispositivi supportati sono quelli con versione di Android Marshmallow (6.0) o suvvessivi.
+
+Qui di seguito si possono vedere alcuni screenshot dell'applicazione Android.
+
+![Screen1](./attachments/01.jpg "01")
+![Screen2](./attachments/02.jpg "02")
+![Screen3](./attachments/03.jpg "03")
+![Screen4](./attachments/04.jpg "04")
+![Screen5](./attachments/05.jpg "05")
