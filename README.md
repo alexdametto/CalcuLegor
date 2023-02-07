@@ -10,7 +10,7 @@ Consiste in un applicazione Android che comunica con un robot Lego Mindstorm EV3
 
 Video demo di una delle prime versioni dell'applicazione:
 
-[![DEMO](./attachments/thumb-video.png)](./attachments/demo.mp4)
+[![DEMO](./attachments/thumb-video.png)](https://youtu.be/4-XVAgJz4Yc)
 
 ## Introduzione
 
